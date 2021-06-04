@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +16,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,9 +40,12 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton card_photo;
     private ImageButton card_gallery;
     private ImageButton card_delete;
+    private ImageButton card_select_all;
+    private ImageButton card_multiple_share;
     private ImageView page_sort;
     private ImageView page_search;
     private ImageView select_items;
+    private ImageView selection_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         date = simpleDateFormat.format(new Date());
         selected_items = new ArrayList<>();
 
+        loadData();
         buildrecyclerview();
 
         card_add = findViewById(R.id.card_add);
@@ -58,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
         page_sort = findViewById(R.id.page_sort);
         page_search = findViewById(R.id.page_search);
         select_items = findViewById(R.id.select_items);
+        selection_cancel = findViewById(R.id.selection_cancel);
+        card_select_all = findViewById(R.id.card_select_all);
+        card_multiple_share = findViewById(R.id.card_share_multiple);
 
         card_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,30 +90,170 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mAdapter.setSelecttype(1);
                 mAdapter.notifyDataSetChanged();
+                card_select_all.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.INVISIBLE);
                 card_photo.setVisibility(View.INVISIBLE);
                 card_gallery.setVisibility(View.INVISIBLE);
+                page_search.setVisibility(View.INVISIBLE);
+                page_sort.setVisibility(View.INVISIBLE);
+                selection_cancel.setVisibility(View.VISIBLE);
+            }
+        });
+        selection_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.setSelecttype(0);
+                for(int i=0;i<mElist.size();i++)
+                {
+                    mElist.get(i).setSelected(false);
+                }
+                selected_items = new ArrayList<>();
+                mAdapter.notifyDataSetChanged();
+                card_select_all.setVisibility(View.INVISIBLE);
+                card_add.setVisibility(View.VISIBLE);
+                card_photo.setVisibility(View.VISIBLE);
+                card_gallery.setVisibility(View.VISIBLE);
+                page_search.setVisibility(View.VISIBLE);
+                page_sort.setVisibility(View.VISIBLE);
+                selection_cancel.setVisibility(View.INVISIBLE);
+                card_delete.setVisibility(View.INVISIBLE);
+                card_multiple_share.setVisibility(View.INVISIBLE);
+            }
+        });
+        card_select_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.setSelecttype(1);
+                selected_items = new ArrayList<>();
+                for(int i=0;i<mElist.size();i++)
+                {
+                    mElist.get(i).setSelected(true);
+                    selected_items.add(i);
+                }
+                mAdapter.notifyDataSetChanged();
+                card_delete.setVisibility(View.VISIBLE);
+                card_multiple_share.setVisibility(View.VISIBLE);
+            }
+        });
+        page_sort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortItems();
             }
         });
 
+    }
+
+    private void saveData()
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(mElist);
+        editor.putString("doc_list",json);
+        editor.apply();
+    }
+
+    private void loadData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("doc_list",null);
+        Type type = new TypeToken<ArrayList<Card_item>>(){}.getType();
+        mElist = gson.fromJson(json,type);
+        if(mElist==null)
+        {
+            mElist = new ArrayList<Card_item>();
+        }
     }
 
     private void insert_item(int position)
     {
         mElist.add(mElist.size(),new Card_item("New Folder",date,null,false));
         mAdapter.notifyItemInserted(position);
+        saveData();
     }
 
     private void remove_item(int position)
     {
         mElist.remove(position);
         mAdapter.notifyItemRemoved(position);
+        saveData();
+    }
+
+    private void sortItems()
+    {
+        String[] objects = {"Creation date (ascending)","Creation date (descending)","Title (A-Z)","Title (Z-A)"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Sort by:")
+        .setItems(objects, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which)
+                {
+                    case 0: sortdateasc();
+                        break;
+                    case 1: sortdatedesc();
+                        break;
+                    case 2: sortAZ();
+                        break;
+                    case 3: sortZA();
+                        break;
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void sortAZ()
+    {
+        Collections.sort(mElist, new Comparator<Card_item>() {
+            @Override
+            public int compare(Card_item o1, Card_item o2) {
+                return o1.getTitle().trim().toLowerCase().compareTo(o2.getTitle().trim().toLowerCase());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        saveData();
+    }
+
+    private void sortZA()
+    {
+        Collections.sort(mElist, new Comparator<Card_item>() {
+            @Override
+            public int compare(Card_item o1, Card_item o2) {
+                return o2.getTitle().trim().toLowerCase().compareTo(o1.getTitle().trim().toLowerCase());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        saveData();
+    }
+
+    private void sortdateasc()
+    {
+        Collections.sort(mElist, new Comparator<Card_item>() {
+            @Override
+            public int compare(Card_item o1, Card_item o2) {
+                return o1.getDate().trim().toLowerCase().compareTo(o2.getDate().trim().toLowerCase());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        saveData();
+    }
+
+    private void sortdatedesc()
+    {
+        Collections.sort(mElist, new Comparator<Card_item>() {
+            @Override
+            public int compare(Card_item o1, Card_item o2) {
+                return o2.getDate().trim().toLowerCase().compareTo(o2.getDate().trim().toLowerCase());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        saveData();
     }
 
     private void buildrecyclerview()
     {
-        mElist = new ArrayList<>();
-
         mRecyclerView = findViewById(R.id.home_recview);
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new Rec_View_Adapter(mElist);
@@ -117,22 +269,27 @@ public class MainActivity extends AppCompatActivity {
                     if(mElist.get(position).isSelected()==true)
                     {
                         mElist.get(position).setSelected(false);
-                        mAdapter.notifyDataSetChanged();
                         for(int i=0;i<selected_items.size();i++)
                         {
-                            if(i==position)
+                            if(selected_items.get(i)==position)
                             {
                                 selected_items.remove(i);
                             }
                         }
+                        mAdapter.notifyDataSetChanged();
                         if(selected_items.size()==0)
                         {
                             mAdapter.setSelecttype(0);
                             mAdapter.notifyDataSetChanged();
-                            card_delete.setVisibility(View.INVISIBLE);
+                            card_select_all.setVisibility(View.INVISIBLE);
                             card_add.setVisibility(View.VISIBLE);
                             card_photo.setVisibility(View.VISIBLE);
                             card_gallery.setVisibility(View.VISIBLE);
+                            page_search.setVisibility(View.VISIBLE);
+                            page_sort.setVisibility(View.VISIBLE);
+                            selection_cancel.setVisibility(View.INVISIBLE);
+                            card_delete.setVisibility(View.INVISIBLE);
+                            card_multiple_share.setVisibility(View.INVISIBLE);
                         }
                     }
                     else
@@ -143,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
                         if(selected_items.size()>0)
                         {
                             card_delete.setVisibility(View.VISIBLE);
+                            card_multiple_share.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -154,10 +312,15 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.setSelecttype(1);
                 mElist.get(position).setSelected(true);
                 selected_items.add(position);
+                card_select_all.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.INVISIBLE);
                 card_photo.setVisibility(View.INVISIBLE);
                 card_gallery.setVisibility(View.INVISIBLE);
                 card_delete.setVisibility(View.VISIBLE);
+                card_multiple_share.setVisibility(View.VISIBLE);
+                page_search.setVisibility(View.INVISIBLE);
+                page_sort.setVisibility(View.INVISIBLE);
+                selection_cancel.setVisibility(View.VISIBLE);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -189,10 +352,16 @@ public class MainActivity extends AppCompatActivity {
                 selected_items = new ArrayList<>();
                 mAdapter.setSelecttype(0);
                 mAdapter.notifyDataSetChanged();
-                card_delete.setVisibility(View.INVISIBLE);
+                card_select_all.setVisibility(View.INVISIBLE);
                 card_add.setVisibility(View.VISIBLE);
                 card_photo.setVisibility(View.VISIBLE);
                 card_gallery.setVisibility(View.VISIBLE);
+                page_search.setVisibility(View.VISIBLE);
+                page_sort.setVisibility(View.VISIBLE);
+                selection_cancel.setVisibility(View.INVISIBLE);
+                card_delete.setVisibility(View.INVISIBLE);
+                card_multiple_share.setVisibility(View.INVISIBLE);
+                saveData();
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -217,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
                 EditText asdf = view.findViewById(R.id.edit_title);
                 mElist.get(position).setTitle(asdf.getText().toString().trim());
                 mAdapter.notifyDataSetChanged();
+                saveData();
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

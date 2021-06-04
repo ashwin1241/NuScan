@@ -17,6 +17,17 @@
         android:src="@drawable/ic_sharp_search_30"/>
 
     <ImageView
+        android:id="@+id/selection_cancel"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="10sp"
+        android:src="@drawable/ic_outline_cancel_40"
+        android:visibility="invisible"/>
+
+    <ImageView
         android:id="@+id/page_sort"
         android:layout_width="40sp"
         android:layout_height="40sp"
@@ -58,6 +69,20 @@
         />
 
     <ImageButton
+        android:id="@+id/card_select_all"
+        android:layout_width="55sp"
+        android:layout_height="55sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="20sp"
+        android:layout_marginStart="60sp"
+        android:background="@drawable/custom_button_shape"
+        android:src="@drawable/ic_sharp_select_all_50"
+        android:elevation="10sp"
+        android:visibility="invisible"
+        />
+
+    <ImageButton
         android:id="@+id/card_gallery"
         android:layout_width="55sp"
         android:layout_height="55sp"
@@ -68,6 +93,20 @@
         android:background="@drawable/custom_button_shape"
         android:src="@drawable/ic_outline_insert_photo_50"
         android:elevation="10sp"
+        />
+
+    <ImageButton
+        android:id="@+id/card_share_multiple"
+        android:layout_width="55sp"
+        android:layout_height="55sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20sp"
+        android:layout_marginEnd="60sp"
+        android:background="@drawable/custom_button_shape"
+        android:src="@drawable/ic_outline_share_241"
+        android:elevation="10sp"
+        android:visibility="invisible"
         />
 
     <ImageButton
