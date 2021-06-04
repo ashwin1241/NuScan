@@ -3,6 +3,8 @@ package com.example.nuscanner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,10 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_View_Holder> {
+public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_View_Holder>{
 
-    private ArrayList<Card_item> arrayList;
+    private List<Card_item> arrayList;
     private int selecttype = 0;
     private OnItemClickListener mListener;
 
@@ -109,10 +112,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         }
     }
 
-    public Rec_View_Adapter(ArrayList<Card_item> list)
-    {
-        this.arrayList = list;
-    }
+    public Rec_View_Adapter(ArrayList<Card_item> list) { this.arrayList = list;}
 
     @Override
     public Rec_View_Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -156,4 +156,11 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         this.selecttype = selecttype;
     }
     public int getSelecttype() { return this.selecttype; }
+
+    public void filterList(ArrayList<Card_item> filterList)
+    {
+        arrayList = filterList;
+        notifyDataSetChanged();
+    }
+
 }

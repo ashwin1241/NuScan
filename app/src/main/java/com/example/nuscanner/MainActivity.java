@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView page_search;
     private ImageView select_items;
     private ImageView selection_cancel;
+    private EditText searchfield;
+    private ImageView search_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         selection_cancel = findViewById(R.id.selection_cancel);
         card_select_all = findViewById(R.id.card_select_all);
         card_multiple_share = findViewById(R.id.card_share_multiple);
+        searchfield = findViewById(R.id.searchfield);
+        search_cancel = findViewById(R.id.search_cancel);
 
         card_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,6 +147,26 @@ public class MainActivity extends AppCompatActivity {
                 sortItems();
             }
         });
+        page_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search();
+            }
+        });
+        search_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchfield.setVisibility(View.INVISIBLE);
+                search_cancel.setVisibility(View.INVISIBLE);
+                page_search.setVisibility(View.VISIBLE);
+                page_sort.setVisibility(View.VISIBLE);
+                select_items.setVisibility(View.VISIBLE);
+                card_photo.setVisibility(View.VISIBLE);
+                card_add.setVisibility(View.VISIBLE);
+                card_gallery.setVisibility(View.VISIBLE);
+                buildrecyclerview();
+            }
+        });
 
     }
 
@@ -168,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void insert_item(int position)
     {
-        mElist.add(mElist.size(),new Card_item("New Folder",date,null,false));
+        mElist.add(mElist.size(),new Card_item("NuScanner_"+System.currentTimeMillis(),date,null,false));
         mAdapter.notifyItemInserted(position);
         saveData();
     }
@@ -209,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mElist, new Comparator<Card_item>() {
             @Override
             public int compare(Card_item o1, Card_item o2) {
-                return o1.getTitle().trim().toLowerCase().compareTo(o2.getTitle().trim().toLowerCase());
+                return o1.getTitle().trim().compareTo(o2.getTitle().trim());
             }
         });
         mAdapter.notifyDataSetChanged();
@@ -221,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mElist, new Comparator<Card_item>() {
             @Override
             public int compare(Card_item o1, Card_item o2) {
-                return o2.getTitle().trim().toLowerCase().compareTo(o1.getTitle().trim().toLowerCase());
+                return o2.getTitle().trim().compareTo(o1.getTitle().trim());
             }
         });
         mAdapter.notifyDataSetChanged();
@@ -233,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mElist, new Comparator<Card_item>() {
             @Override
             public int compare(Card_item o1, Card_item o2) {
-                return o1.getDate().trim().toLowerCase().compareTo(o2.getDate().trim().toLowerCase());
+                return o1.getDate().trim().compareTo(o2.getDate().trim());
             }
         });
         mAdapter.notifyDataSetChanged();
@@ -245,11 +271,52 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mElist, new Comparator<Card_item>() {
             @Override
             public int compare(Card_item o1, Card_item o2) {
-                return o2.getDate().trim().toLowerCase().compareTo(o2.getDate().trim().toLowerCase());
+                return o2.getDate().trim().compareTo(o2.getDate().trim());
             }
         });
         mAdapter.notifyDataSetChanged();
         saveData();
+    }
+
+    private void search()
+    {
+        searchfield.setVisibility(View.VISIBLE);
+        search_cancel.setVisibility(View.VISIBLE);
+        page_search.setVisibility(View.INVISIBLE);
+        page_sort.setVisibility(View.INVISIBLE);
+        select_items.setVisibility(View.INVISIBLE);
+        card_photo.setVisibility(View.INVISIBLE);
+        card_add.setVisibility(View.INVISIBLE);
+        card_gallery.setVisibility(View.INVISIBLE);
+        searchfield.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString().trim());
+            }
+        });
+    }
+
+    public void filter(String s)
+    {
+        ArrayList<Card_item> filter_list = new ArrayList<>();
+        for(Card_item item : mElist)
+        {
+            if(item.getTitle().trim().toLowerCase().contains(s.toLowerCase()))
+            {
+                filter_list.add(item);
+            }
+        }
+        mAdapter.filterList(filter_list);
     }
 
     private void buildrecyclerview()
