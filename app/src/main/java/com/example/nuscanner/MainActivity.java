@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -22,9 +23,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -192,9 +195,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    String day;
+    int aret = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
     private void insert_item(int position)
     {
-        mElist.add(mElist.size(),new Card_item("NuScanner_"+System.currentTimeMillis(),date,null,false));
+        switch (aret)
+        {
+            case Calendar.MONDAY: day = "Mon";
+                break;
+            case Calendar.TUESDAY: day = "Tue";
+                break;
+            case Calendar.WEDNESDAY: day = "Wed";
+                break;
+            case Calendar.THURSDAY: day = "Thu";
+                break;
+            case Calendar.FRIDAY: day = "Fri";
+                break;
+            case Calendar.SATURDAY: day = "Sat";
+                break;
+            case Calendar.SUNDAY: day = "Sun";
+                break;
+        }
+        mElist.add(mElist.size(),new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,null,false));
         mAdapter.notifyItemInserted(position);
         saveData();
     }
