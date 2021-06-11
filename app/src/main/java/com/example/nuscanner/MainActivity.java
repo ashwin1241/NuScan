@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -173,12 +174,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void saveData()
+    private void saveData(ArrayList<Card_item> eList1)
     {
         SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(mElist);
+        String json = gson.toJson(eList1);
         editor.putString("doc_list",json);
         editor.apply();
     }
@@ -217,16 +218,17 @@ public class MainActivity extends AppCompatActivity {
             case Calendar.SUNDAY: day = "Sun";
                 break;
         }
-        mElist.add(mElist.size(),new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,null,false));
+        mElist.add(mElist.size(), new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
+        mElist.get(position).setId(System.currentTimeMillis());
         mAdapter.notifyItemInserted(position);
-        saveData();
+        saveData(mElist);
     }
 
     private void remove_item(int position)
     {
         mElist.remove(position);
         mAdapter.notifyItemRemoved(position);
-        saveData();
+        saveData(mElist);
     }
 
     private void sortItems()
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData();
+        saveData(mElist);
     }
 
     private void sortZA()
@@ -274,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData();
+        saveData(mElist);
     }
 
     private void sortdateasc()
@@ -286,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData();
+        saveData(mElist);
     }
 
     private void sortdatedesc()
@@ -298,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData();
+        saveData(mElist);
     }
 
     private void search()
@@ -394,7 +396,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-
+                else
+                {
+                    Intent intent = new Intent(MainActivity.this,File.class);
+                    intent.putExtra("page_title",mElist.get(position).getTitle());
+                    intent.putExtra("card_id",mElist.get(position).getId());
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -451,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
                 selection_cancel.setVisibility(View.INVISIBLE);
                 card_delete.setVisibility(View.INVISIBLE);
                 card_multiple_share.setVisibility(View.INVISIBLE);
-                saveData();
+                saveData(mElist);
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -476,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
                 EditText asdf = view.findViewById(R.id.edit_title);
                 mElist.get(position).setTitle(asdf.getText().toString().trim());
                 mAdapter.notifyDataSetChanged();
-                saveData();
+                saveData(mElist);
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

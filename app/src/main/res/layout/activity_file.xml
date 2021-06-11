@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".File">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sub_file_recview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#dedede"/>
+
+    <ImageButton
+        android:id="@+id/sub_item_add"
+        android:layout_width="55sp"
+        android:layout_height="55sp"
+        android:elevation="10sp"
+        android:background="@drawable/custom_button_shape"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20sp"
+        android:src="@drawable/ic_round_add_50"/>
+
+</RelativeLayout>

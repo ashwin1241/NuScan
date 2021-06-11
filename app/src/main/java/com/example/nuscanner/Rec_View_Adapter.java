@@ -42,7 +42,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         public TextView card_title;
         public TextView card_date;
 
-        public Rec_View_Holder(@NonNull View itemView,OnItemClickListener listener) {
+        public Rec_View_Holder(@NonNull View itemView, Rec_View_Adapter.OnItemClickListener listener) {
             super(itemView);
 
             card_image = itemView.findViewById(R.id.card_image);

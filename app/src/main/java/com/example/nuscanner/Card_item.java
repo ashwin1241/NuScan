@@ -1,17 +1,18 @@
 package com.example.nuscanner;
 
+import java.util.ArrayList;
+
 public class Card_item {
 
     private String title;
     private String date;
-    private String Url;
     private boolean isSelected;
+    private long id;
 
-    public Card_item(String mtitle, String mdate, String mUrl, boolean misSelected)
+    public Card_item(String mtitle, String mdate, boolean misSelected)
     {
         this.title = mtitle;
         this.date = mdate;
-        this.Url = mUrl;
         this.isSelected = misSelected;
     }
 
@@ -31,19 +32,19 @@ public class Card_item {
         this.date = date;
     }
 
-    public String getUrl() {
-        return Url;
-    }
-
-    public void setUrl(String url) {
-        Url = url;
-    }
-
     public boolean isSelected() {
         return isSelected;
     }
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
