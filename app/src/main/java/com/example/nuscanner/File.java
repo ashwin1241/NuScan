@@ -43,7 +43,6 @@ public class File extends AppCompatActivity {
         {
             getSupportActionBar().setTitle(page_title);
         }
-        card_id = getIntent().getLongExtra("card_id",0);
 
         loadData();
         buildrecyclerview();
@@ -60,7 +59,8 @@ public class File extends AppCompatActivity {
 
     private void saveData(ArrayList<Card_sub_item> eList2)
     {
-        SharedPreferences sharedPreferences = getSharedPreferences("id:"+card_id, MODE_PRIVATE);
+        card_id = getIntent().getLongExtra("card_id",0);
+        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(eList2);
@@ -70,7 +70,9 @@ public class File extends AppCompatActivity {
 
     private void loadData()
     {
-        SharedPreferences sharedPreferences = getSharedPreferences("id:"+card_id, MODE_PRIVATE);
+        String str;
+        card_id = getIntent().getLongExtra("card_id",0);
+        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("sub_doc_list"+card_id,null);
         Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();

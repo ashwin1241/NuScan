@@ -1,7 +1,5 @@
 package com.example.nuscanner;
 
-import java.util.ArrayList;
-
 public class Card_item {
 
     private String title;
