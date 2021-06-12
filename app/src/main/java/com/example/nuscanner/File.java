@@ -1,24 +1,37 @@
 package com.example.nuscanner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 public class File extends AppCompatActivity {
 
@@ -29,6 +42,10 @@ public class File extends AppCompatActivity {
     private String page_title;
     private ImageButton sub_item_add;
     private long card_id;
+    private int temp_position;
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference("Images");
+    private StorageReference reference = FirebaseStorage.getInstance().getReference();
+    private Uri imguri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +105,11 @@ public class File extends AppCompatActivity {
         mElist.add(mElist.size(),new Card_sub_item(page_title+"_"+position,null));
         mAdapter.notifyItemInserted(position);
         saveData(mElist);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent,154);
+        temp_position = position;
     }
 
     private void shareitem(int position)
@@ -106,9 +128,7 @@ public class File extends AppCompatActivity {
 
         mAdapter.setOnItemClickListener(new Rec_View_Sub_Adatper.OnItemClickListener() {
             @Override
-            public void OnItemClicked(int position) {
-
-            }
+            public void OnItemClicked(int position) {}
 
             @Override
             public void OnTitleClicked(int position) {
@@ -119,6 +139,7 @@ public class File extends AppCompatActivity {
             public void OnItemLongClicked(int position) {
                 openLongClickDialog(position);
             }
+
         });
 
     }
@@ -187,6 +208,53 @@ public class File extends AppCompatActivity {
             }
         });
         builder.create().show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 154 && resultCode == RESULT_OK && data != null)
+        {
+            imguri = data.getData();
+            if(imguri != null)
+            {
+                StorageReference fileRef = reference.child(System.currentTimeMillis()+"."+getfileextension(imguri));
+                fileRef.putFile(imguri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Model model = new Model(uri.toString());
+                                String mid = root.push().getKey();
+                                root.child(mid).setValue(model);
+                                mElist.get(temp_position).setImage(uri.toString());
+                                Toast.makeText(File.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                                saveData(mElist);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(File.this, "Upload failed 1101", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    private String getfileextension(Uri uri)
+    {
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(cr.getType(uri));
     }
 
 }

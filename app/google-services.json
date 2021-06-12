@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "581576992023",
+    "project_id": "nuscanner-fd0aa",
+    "storage_bucket": "nuscanner-fd0aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581576992023:android:8c46dd36134578b4bac352",
+        "android_client_info": {
+          "package_name": "com.example.nuscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581576992023-1ppevuamo059cfttf88eup88celbm4t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARwUAe5C-9VJhillF4mytSJ2F1Mykf6wY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581576992023-1ppevuamo059cfttf88eup88celbm4t8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

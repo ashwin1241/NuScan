@@ -1,5 +1,6 @@
 package com.example.nuscanner;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,11 +105,11 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
         holder.card_sub_title.setText(current_sub_item.getTitle());
         if(current_sub_item.getImage()!=null)
         {
-            holder.card_sub_image.setImageURI(current_sub_item.getImage());
+            Picasso.get().load(current_sub_item.getImage()).placeholder(R.drawable.loading).into(holder.card_sub_image);
         }
         else
         {
-            holder.card_sub_image.setImageResource(R.drawable.ic_round_add_photo_alternate_180);
+            holder.card_sub_image.setImageResource(R.drawable.loading);
         }
     }
 

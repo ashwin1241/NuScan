@@ -5,9 +5,9 @@ import android.net.Uri;
 public class Card_sub_item {
 
 private String title;
-private Uri image;
+private String image = null;
 
-public Card_sub_item(String title1, Uri image1)
+public Card_sub_item(String title1, String image1)
 {
     this.title = title1;
     this.image = image1;
@@ -21,11 +21,11 @@ public Card_sub_item(String title1, Uri image1)
         this.title = title;
     }
 
-    public Uri getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Uri image) {
+    public void setImage(String image) {
         this.image = image;
     }
 }
