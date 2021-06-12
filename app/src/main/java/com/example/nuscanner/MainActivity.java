@@ -1,5 +1,6 @@
 package com.example.nuscanner;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private SimpleDateFormat simpleDateFormat;
     private String date;
     private ImageButton card_add;
-    private ImageButton card_photo;
-    private ImageButton card_gallery;
     private ImageButton card_delete;
     private ImageButton card_select_all;
     private ImageButton card_multiple_share;
@@ -69,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
         buildrecyclerview();
 
         card_add = findViewById(R.id.card_add);
-        card_photo = findViewById(R.id.card_photo);
-        card_gallery = findViewById(R.id.card_gallery);
         card_delete = findViewById(R.id.card_delete);
         page_sort = findViewById(R.id.page_sort);
         page_search = findViewById(R.id.page_search);
@@ -84,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         card_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insert_item(mElist.size());
+                insert_item(0);
             }
         });
 
@@ -102,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 card_select_all.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.INVISIBLE);
-                card_photo.setVisibility(View.INVISIBLE);
-                card_gallery.setVisibility(View.INVISIBLE);
                 page_search.setVisibility(View.INVISIBLE);
                 page_sort.setVisibility(View.INVISIBLE);
                 selection_cancel.setVisibility(View.VISIBLE);
@@ -121,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 card_select_all.setVisibility(View.INVISIBLE);
                 card_add.setVisibility(View.VISIBLE);
-                card_photo.setVisibility(View.VISIBLE);
-                card_gallery.setVisibility(View.VISIBLE);
                 page_search.setVisibility(View.VISIBLE);
                 page_sort.setVisibility(View.VISIBLE);
                 selection_cancel.setVisibility(View.INVISIBLE);
@@ -165,9 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 page_search.setVisibility(View.VISIBLE);
                 page_sort.setVisibility(View.VISIBLE);
                 select_items.setVisibility(View.VISIBLE);
-                card_photo.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.VISIBLE);
-                card_gallery.setVisibility(View.VISIBLE);
                 buildrecyclerview();
             }
         });
@@ -218,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
             case Calendar.SUNDAY: day = "Sun";
                 break;
         }
-        mElist.add(mElist.size(), new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
+        mElist.add(position, new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
         mElist.get(position).setId(System.currentTimeMillis());
         mAdapter.notifyItemInserted(position);
         saveData(mElist);
@@ -310,9 +301,7 @@ public class MainActivity extends AppCompatActivity {
         page_search.setVisibility(View.INVISIBLE);
         page_sort.setVisibility(View.INVISIBLE);
         select_items.setVisibility(View.INVISIBLE);
-        card_photo.setVisibility(View.INVISIBLE);
         card_add.setVisibility(View.INVISIBLE);
-        card_gallery.setVisibility(View.INVISIBLE);
         searchfield.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -375,8 +364,6 @@ public class MainActivity extends AppCompatActivity {
                             mAdapter.notifyDataSetChanged();
                             card_select_all.setVisibility(View.INVISIBLE);
                             card_add.setVisibility(View.VISIBLE);
-                            card_photo.setVisibility(View.VISIBLE);
-                            card_gallery.setVisibility(View.VISIBLE);
                             page_search.setVisibility(View.VISIBLE);
                             page_sort.setVisibility(View.VISIBLE);
                             selection_cancel.setVisibility(View.INVISIBLE);
@@ -412,8 +399,6 @@ public class MainActivity extends AppCompatActivity {
                 selected_items.add(position);
                 card_select_all.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.INVISIBLE);
-                card_photo.setVisibility(View.INVISIBLE);
-                card_gallery.setVisibility(View.INVISIBLE);
                 card_delete.setVisibility(View.VISIBLE);
                 card_multiple_share.setVisibility(View.VISIBLE);
                 page_search.setVisibility(View.INVISIBLE);
@@ -452,8 +437,6 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 card_select_all.setVisibility(View.INVISIBLE);
                 card_add.setVisibility(View.VISIBLE);
-                card_photo.setVisibility(View.VISIBLE);
-                card_gallery.setVisibility(View.VISIBLE);
                 page_search.setVisibility(View.VISIBLE);
                 page_sort.setVisibility(View.VISIBLE);
                 selection_cancel.setVisibility(View.INVISIBLE);

@@ -11,8 +11,10 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -30,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -40,7 +43,8 @@ public class File extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<Card_sub_item> mElist;
     private String page_title;
-    private ImageButton sub_item_add;
+    private ImageButton sub_item_camera;
+    private ImageButton sub_item_gallery;
     private long card_id;
     private int temp_position;
     private DatabaseReference root = FirebaseDatabase.getInstance().getReference("Images");
@@ -64,11 +68,18 @@ public class File extends AppCompatActivity {
         loadData();
         buildrecyclerview();
 
-        sub_item_add = findViewById(R.id.sub_item_add);
-        sub_item_add.setOnClickListener(new View.OnClickListener() {
+        sub_item_gallery = findViewById(R.id.sub_item_gallery);
+        sub_item_camera = findViewById(R.id.sub_item_camera);
+        sub_item_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertitem(mElist.size());
+                insert_gallery_item(mElist.size());
+            }
+        });
+        sub_item_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insert_camera_item(mElist.size());
             }
         });
 
@@ -100,16 +111,26 @@ public class File extends AppCompatActivity {
         }
     }
 
-    private void insertitem(int position)
+    private void insert_gallery_item(int position)
     {
-        mElist.add(mElist.size(),new Card_sub_item(page_title+"_"+position,null));
-        mAdapter.notifyItemInserted(position);
-        saveData(mElist);
+        temp_position = position;
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent,154);
+        mElist.add(position,new Card_sub_item(page_title+"_"+position,null));
+        mAdapter.notifyItemInserted(position);
+        saveData(mElist);
+    }
+
+    private void insert_camera_item(int position)
+    {
         temp_position = position;
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent,132);
+        mElist.add(position,new Card_sub_item(page_title+"_"+position,null));
+        mAdapter.notifyItemInserted(position);
+        saveData(mElist);
     }
 
     private void shareitem(int position)
@@ -245,7 +266,47 @@ public class File extends AppCompatActivity {
             }
             else
             {
-
+                Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if(requestCode == 132 && resultCode == RESULT_OK && data != null)
+        {
+            Bitmap image = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+            String path =
+                    MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
+            imguri = Uri.parse(path);
+            if(imguri != null)
+            {
+                StorageReference fileRef = reference.child(System.currentTimeMillis()+"."+getfileextension(imguri));
+                fileRef.putFile(imguri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Model model = new Model(uri.toString());
+                                String mid = root.push().getKey();
+                                root.child(mid).setValue(model);
+                                mElist.get(temp_position).setImage(uri.toString());
+                                Toast.makeText(File.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                                saveData(mElist);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(File.this, "Upload failed 1101", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+            else
+            {
+                Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
             }
         }
     }

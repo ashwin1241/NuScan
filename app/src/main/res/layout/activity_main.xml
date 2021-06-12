@@ -82,9 +82,8 @@
         android:layout_width="55sp"
         android:layout_height="55sp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="20sp"
-        android:layout_marginStart="60sp"
         android:background="@drawable/custom_button_shape"
         android:src="@drawable/ic_round_add_50"
         android:elevation="10sp"
@@ -105,19 +104,6 @@
         />
 
     <ImageButton
-        android:id="@+id/card_gallery"
-        android:layout_width="55sp"
-        android:layout_height="55sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="20sp"
-        android:layout_marginEnd="60sp"
-        android:background="@drawable/custom_button_shape"
-        android:src="@drawable/ic_outline_insert_photo_50"
-        android:elevation="10sp"
-        />
-
-    <ImageButton
         android:id="@+id/card_share_multiple"
         android:layout_width="55sp"
         android:layout_height="55sp"
@@ -130,17 +116,6 @@
         android:elevation="10sp"
         android:visibility="invisible"
         />
-
-    <ImageButton
-        android:id="@+id/card_photo"
-        android:layout_width="70sp"
-        android:layout_height="70sp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20sp"
-        android:background="@drawable/custom_button_shape"
-        android:src="@drawable/ic_outline_photo_camera_60"
-        android:elevation="10sp"/>
 
     <ImageButton
         android:id="@+id/card_delete"
