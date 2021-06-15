@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".File">
+    tools:context=".File"
+    android:background="#dedede">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sub_file_recview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#dedede"/>
+        android:background="#dedede"
+        android:layout_margin="5sp"/>
 
     <ImageButton
         android:id="@+id/sub_item_camera"
