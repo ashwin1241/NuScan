@@ -1,7 +1,5 @@
 package com.example.nuscanner;
 
-import android.net.Uri;
-
 public class Card_sub_item {
 
 private String title;
