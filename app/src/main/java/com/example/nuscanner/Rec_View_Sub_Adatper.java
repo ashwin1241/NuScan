@@ -105,11 +105,11 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
         holder.card_sub_title.setText(current_sub_item.getTitle());
         if(current_sub_item.getImage()!=null)
         {
-            Picasso.get().load(current_sub_item.getImage()).placeholder(R.drawable.loading).into(holder.card_sub_image);
+            Picasso.get().load(Uri.parse(current_sub_item.getImage())).placeholder(R.drawable.ic_loader_svg).into(holder.card_sub_image);
         }
         else
         {
-            holder.card_sub_image.setImageResource(R.drawable.loading);
+            holder.card_sub_image.setImageResource(R.drawable.ic_loader_svg);
         }
     }
 

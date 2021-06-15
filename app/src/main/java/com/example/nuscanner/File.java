@@ -17,22 +17,15 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -47,8 +40,6 @@ public class File extends AppCompatActivity {
     private ImageButton sub_item_gallery;
     private long card_id;
     private int temp_position;
-    private DatabaseReference root = FirebaseDatabase.getInstance().getReference("Images");
-    private StorageReference reference = FirebaseStorage.getInstance().getReference();
     private Uri imguri = null;
 
     @Override
@@ -237,32 +228,22 @@ public class File extends AppCompatActivity {
         if(requestCode == 154 && resultCode == RESULT_OK && data != null)
         {
             imguri = data.getData();
+            Bitmap image = null;
+            try {
+                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imguri);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
+                imguri = Uri.parse(path);
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
             if(imguri != null)
             {
-                StorageReference fileRef = reference.child(System.currentTimeMillis()+"."+getfileextension(imguri));
-                fileRef.putFile(imguri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Model model = new Model(uri.toString());
-                                String mid = root.push().getKey();
-                                root.child(mid).setValue(model);
-                                mElist.get(temp_position).setImage(uri.toString());
-                                Toast.makeText(File.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                saveData(mElist);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(File.this, "Upload failed 1101", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                mElist.get(temp_position).setImage(imguri.toString());
+                Toast.makeText(File.this, "File saved", Toast.LENGTH_SHORT).show();
+                saveData(mElist);
+                mAdapter.notifyDataSetChanged();
             }
             else
             {
@@ -274,48 +255,20 @@ public class File extends AppCompatActivity {
             Bitmap image = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-            String path =
-                    MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
+            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
             imguri = Uri.parse(path);
             if(imguri != null)
             {
-                StorageReference fileRef = reference.child(System.currentTimeMillis()+"."+getfileextension(imguri));
-                fileRef.putFile(imguri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Model model = new Model(uri.toString());
-                                String mid = root.push().getKey();
-                                root.child(mid).setValue(model);
-                                mElist.get(temp_position).setImage(uri.toString());
-                                Toast.makeText(File.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                saveData(mElist);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(File.this, "Upload failed 1101", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                mElist.get(temp_position).setImage(imguri.toString());
+                Toast.makeText(File.this, "File saved", Toast.LENGTH_SHORT).show();
+                saveData(mElist);
+                mAdapter.notifyDataSetChanged();
             }
             else
             {
                 Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private String getfileextension(Uri uri)
-    {
-        ContentResolver cr = getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(cr.getType(uri));
     }
 
 }
