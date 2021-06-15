@@ -10,8 +10,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -138,7 +144,11 @@ public class File extends AppCompatActivity {
 
         mAdapter.setOnItemClickListener(new Rec_View_Sub_Adatper.OnItemClickListener() {
             @Override
-            public void OnItemClicked(int position) {}
+            public void OnItemClicked(int position) {
+                Intent intent = new Intent(File.this,Preview.class);
+                intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
+                startActivity(intent);
+            }
 
             @Override
             public void OnTitleClicked(int position) {
