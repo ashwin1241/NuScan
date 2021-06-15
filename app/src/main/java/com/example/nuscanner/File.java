@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -130,7 +131,34 @@ public class File extends AppCompatActivity {
 
     private void shareitem(int position)
     {
+        String[] sub_objects = {"PDF","JPG"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(File.this);
+        builder.setItems(sub_objects, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which)
+                {
+                    case 0 : sharepdf(position);
+                        break;
+                    case 1 : sharejpg(position);
+                        break;
+                }
+            }
+        });
+        builder.create().show();
+    }
 
+    private void sharepdf(int position)
+    {
+
+    }
+
+    private void sharejpg(int position)
+    {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/jpg");
+        intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
+        startActivity(Intent.createChooser(intent,"Share"));
     }
 
     private void buildrecyclerview()
