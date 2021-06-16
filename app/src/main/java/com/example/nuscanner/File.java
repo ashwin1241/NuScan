@@ -150,7 +150,32 @@ public class File extends AppCompatActivity {
 
     private void sharepdf(int position)
     {
+        try {
+            String destdirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)+ "/NuScanner";
+            java.io.File file = new java.io.File(destdirectory);
+            if(!file.exists())
+            {
+                file.mkdir();
+                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+            }
+            String pdfname = destdirectory+"/NuScanner_"+position+"_"+card_id+".pdf";
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),Uri.parse(mElist.get(position).getImage()));
+            PdfDocument pdfDocument = new PdfDocument();
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
+            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+            page.getCanvas().drawBitmap(bitmap,0,0,null);
+            pdfDocument.finishPage(page);
+            java.io.File file1 = new java.io.File(pdfname);
+            pdfDocument.writeTo(new FileOutputStream(file1));
+            pdfDocument.close();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("file/pdf");
+            intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(pdfname));
+            startActivity(intent);
 
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void sharejpg(int position)
