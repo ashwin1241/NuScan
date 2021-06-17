@@ -292,10 +292,20 @@ public class File extends AppCompatActivity {
             Bitmap image = null;
             try {
                 image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imguri);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                String destdir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/NuScanner";
+                java.io.File file = new java.io.File(destdir);
+                if(!file.exists())
+                {
+                    file.mkdir();
+                    Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                }
+                String imgname = destdir+"/NuScanner_"+System.currentTimeMillis()+".jpg";
+                java.io.File imgfile = new java.io.File(imgname);
+                FileOutputStream outputStream = new FileOutputStream(imgfile);
                 image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-                String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
-                imguri = Uri.parse(path);
+                outputStream.flush();
+                outputStream.close();
+                imguri = Uri.fromFile(imgfile);
             } catch (IOException e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
