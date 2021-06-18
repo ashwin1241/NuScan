@@ -3,6 +3,7 @@ package com.example.nuscanner;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -46,6 +49,7 @@ public class File extends AppCompatActivity {
     private long card_id;
     private int temp_position;
     private Uri imguri = null;
+    private Uri camuri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +126,18 @@ public class File extends AppCompatActivity {
     private void insert_camera_item(int position)
     {
         temp_position = position;
+        String destination = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString();
+        java.io.File file = new java.io.File(destination);
+        if(!file.exists())
+        {
+            file.mkdir();
+            Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+        }
+        String imigname = destination+"/NuScanner_"+System.currentTimeMillis()+".jpg";
+        java.io.File imgFile = new java.io.File(imigname);
+        camuri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider",imgFile);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,camuri);
         startActivityForResult(intent,132);
         mElist.add(position,new Card_sub_item(page_title+"_"+position,null));
         mAdapter.notifyItemInserted(position);
@@ -151,37 +166,36 @@ public class File extends AppCompatActivity {
     private void sharepdf(int position)
     {
         try {
-            String destdirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)+ "/NuScanner";
-            java.io.File file = new java.io.File(destdirectory);
+            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
+            java.io.File file = new java.io.File(destination);
             if(!file.exists())
             {
                 file.mkdir();
                 Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
-            String pdfname = destdirectory+"/NuScanner_"+position+"_"+card_id+".pdf";
+            String pdfname = destination+"/NuScanner_"+System.currentTimeMillis()+".pdf";
+            java.io.File pdfFile = new java.io.File(pdfname);
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),Uri.parse(mElist.get(position).getImage()));
             PdfDocument pdfDocument = new PdfDocument();
             PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
             PdfDocument.Page page = pdfDocument.startPage(pageInfo);
             page.getCanvas().drawBitmap(bitmap,0,0,null);
+            FileOutputStream outputStream = new FileOutputStream(pdfFile);
             pdfDocument.finishPage(page);
-            java.io.File file1 = new java.io.File(pdfname);
-            pdfDocument.writeTo(new FileOutputStream(file1));
+            pdfDocument.writeTo(outputStream);
             pdfDocument.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("application/pdf");
+            intent.setType("*/pdf");
             intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(pdfname));
             startActivity(Intent.createChooser(intent,"Share with.."));
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private void sharejpg(int position)
-    {
+    private void sharejpg(int position) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
+        intent.setType("image/jpg");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
         startActivity(Intent.createChooser(intent,"Share with.."));
     }
@@ -292,20 +306,10 @@ public class File extends AppCompatActivity {
             Bitmap image = null;
             try {
                 image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imguri);
-                String destdir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/NuScanner";
-                java.io.File file = new java.io.File(destdir);
-                if(!file.exists())
-                {
-                    file.mkdir();
-                    Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
-                }
-                String imgname = destdir+"/NuScanner_"+System.currentTimeMillis()+".jpg";
-                java.io.File imgfile = new java.io.File(imgname);
-                FileOutputStream outputStream = new FileOutputStream(imgfile);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-                outputStream.flush();
-                outputStream.close();
-                imguri = Uri.fromFile(imgfile);
+                String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
+                imguri = Uri.parse(path);
             } catch (IOException e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -323,21 +327,16 @@ public class File extends AppCompatActivity {
         }
         if(requestCode == 132 && resultCode == RESULT_OK && data != null)
         {
-            Bitmap image = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
-            imguri = Uri.parse(path);
-            if(imguri != null)
+            if(camuri!=null)
             {
-                mElist.get(temp_position).setImage(imguri.toString());
+                mElist.get(temp_position).setImage(camuri.toString());
                 Toast.makeText(File.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
                 mAdapter.notifyDataSetChanged();
             }
             else
             {
-                Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Image could not be saved", Toast.LENGTH_SHORT).show();
             }
         }
     }
