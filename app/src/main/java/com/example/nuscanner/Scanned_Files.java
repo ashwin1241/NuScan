@@ -112,9 +112,6 @@ public class Scanned_Files extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent,154);
-        mElist.add(position,new Card_sub_item(page_title+"_"+position,null));
-        mAdapter.notifyItemInserted(position);
-        saveData(mElist);
     }
 
     private void insert_camera_item(int position)
@@ -133,9 +130,6 @@ public class Scanned_Files extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,camuri);
         startActivityForResult(intent,132);
-        mElist.add(position,new Card_sub_item(page_title+"_"+position,null));
-        mAdapter.notifyItemInserted(position);
-        saveData(mElist);
     }
 
     private void shareitem(int position)
@@ -184,6 +178,7 @@ public class Scanned_Files extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_STREAM,pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT,"NuScanner scanned file "+mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent,"Share with.."));
+            mElist.get(position).setPdf(pdfuri.toString());
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -312,6 +307,8 @@ public class Scanned_Files extends AppCompatActivity {
             }
             if(imguri != null)
             {
+                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null));
+                mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(imguri.toString());
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
@@ -326,6 +323,8 @@ public class Scanned_Files extends AppCompatActivity {
         {
             if(camuri!=null)
             {
+                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null));
+                mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(camuri.toString());
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
