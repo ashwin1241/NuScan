@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".Preview" />
         <activity
-            android:name=".File"
+            android:name=".Scanned_Files"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity"/>
         <provider

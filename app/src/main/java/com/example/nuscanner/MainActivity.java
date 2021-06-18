@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Intent intent = new Intent(MainActivity.this,File.class);
+                    Intent intent = new Intent(MainActivity.this, Scanned_Files.class);
                     intent.putExtra("page_title",mElist.get(position).getTitle());
                     intent.putExtra("card_id",mElist.get(position).getId());
                     startActivity(intent);

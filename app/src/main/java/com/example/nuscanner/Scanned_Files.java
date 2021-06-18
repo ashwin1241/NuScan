@@ -11,10 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,14 +26,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class File extends AppCompatActivity {
+public class Scanned_Files extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private Rec_View_Sub_Adatper mAdapter;
@@ -147,7 +141,7 @@ public class File extends AppCompatActivity {
     private void shareitem(int position)
     {
         String[] sub_objects = {"PDF","JPG"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(File.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setItems(sub_objects, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -215,7 +209,7 @@ public class File extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new Rec_View_Sub_Adatper.OnItemClickListener() {
             @Override
             public void OnItemClicked(int position) {
-                Intent intent = new Intent(File.this,Preview.class);
+                Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
                 startActivity(intent);
             }
@@ -236,8 +230,8 @@ public class File extends AppCompatActivity {
 
     private void openEditDialog(int position)
     {
-        View view = LayoutInflater.from(File.this).inflate(R.layout.edit_dialog,null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(File.this);
+        View view = LayoutInflater.from(Scanned_Files.this).inflate(R.layout.edit_dialog,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setTitle("Edit title")
                 .setMessage("Enter new title")
                 .setView(view)
@@ -262,7 +256,7 @@ public class File extends AppCompatActivity {
     private void openLongClickDialog(int position)
     {
         String[] sub_objects = {"Delete","Share"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(File.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setItems(sub_objects, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -280,7 +274,7 @@ public class File extends AppCompatActivity {
 
     private void openDelDialog(int position)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(File.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setTitle("Delete")
         .setMessage("Are you sure you want to delete this document?")
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -319,7 +313,7 @@ public class File extends AppCompatActivity {
             if(imguri != null)
             {
                 mElist.get(temp_position).setImage(imguri.toString());
-                Toast.makeText(File.this, "File saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
                 mAdapter.notifyDataSetChanged();
             }
@@ -333,7 +327,7 @@ public class File extends AppCompatActivity {
             if(camuri!=null)
             {
                 mElist.get(temp_position).setImage(camuri.toString());
-                Toast.makeText(File.this, "File saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
                 mAdapter.notifyDataSetChanged();
             }
