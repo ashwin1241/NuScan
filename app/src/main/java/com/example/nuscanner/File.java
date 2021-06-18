@@ -199,6 +199,7 @@ public class File extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
+        intent.putExtra(Intent.EXTRA_SUBJECT,"NuScanner scanned file "+mElist.get(position).getTitle());
         startActivity(Intent.createChooser(intent,"Share with.."));
     }
 
