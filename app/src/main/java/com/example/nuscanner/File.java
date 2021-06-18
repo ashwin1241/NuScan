@@ -169,9 +169,9 @@ public class File extends AppCompatActivity {
             pdfDocument.writeTo(new FileOutputStream(file1));
             pdfDocument.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("file/pdf");
+            intent.setType("application/pdf");
             intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(pdfname));
-            startActivity(intent);
+            startActivity(Intent.createChooser(intent,"Share with.."));
 
         } catch (IOException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -181,9 +181,9 @@ public class File extends AppCompatActivity {
     private void sharejpg(int position)
     {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/jpg");
+        intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
-        startActivity(Intent.createChooser(intent,"Share"));
+        startActivity(Intent.createChooser(intent,"Share with.."));
     }
 
     private void buildrecyclerview()
