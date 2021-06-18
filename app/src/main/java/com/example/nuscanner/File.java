@@ -185,8 +185,10 @@ public class File extends AppCompatActivity {
             pdfDocument.writeTo(outputStream);
             pdfDocument.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("*/pdf");
-            intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(pdfname));
+            intent.setType("*/*");
+            Uri pdfuri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider", pdfFile);
+            intent.putExtra(Intent.EXTRA_STREAM,pdfuri);
+            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScanner scanned file "+mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent,"Share with.."));
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -195,7 +197,7 @@ public class File extends AppCompatActivity {
 
     private void sharejpg(int position) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/jpg");
+        intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
         startActivity(Intent.createChooser(intent,"Share with.."));
     }
