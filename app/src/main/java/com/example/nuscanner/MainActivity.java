@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void OnItemShared(int position) {
-                Toast.makeText(MainActivity.this, "Share clicked", Toast.LENGTH_SHORT).show();
+                shareItem(position);
             }
 
             @Override
@@ -412,6 +412,36 @@ public class MainActivity extends AppCompatActivity {
                 openEditDialog(position);
             }
         });
+    }
+
+    private void shareItem(int position)
+    {
+        String[] options = {"PDF","JPG"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Share")
+        .setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which)
+                {
+                    case 0 : sharePDF(position);
+                    break;
+                    case 1 : shareJPG(position);
+                    break;
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void sharePDF(int position)
+    {
+        Toast.makeText(this, "PDF shared", Toast.LENGTH_SHORT).show();
+    }
+
+    private void shareJPG(int position)
+    {
+        Toast.makeText(this, "JPG shared", Toast.LENGTH_SHORT).show();
     }
 
     private void openDelDialog()
