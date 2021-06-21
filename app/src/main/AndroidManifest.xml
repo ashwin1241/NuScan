@@ -13,27 +13,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NuScan">
-        <activity android:name="com.example.nuscan.Launch_splashscreen"
-            android:theme="@style/Theme.NuScan_new"
+        <activity android:name=".App_About"
+            android:parentActivityName=".MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"/>
+        <activity android:name=".App_Guide"
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Launch_splashscreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NuScan_new">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.nuscan.Preview"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
         <activity
-            android:name="com.example.nuscan.Scanned_Files"
-            android:parentActivityName="com.example.nuscan.MainActivity"
+            android:name=".Preview"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.example.nuscan.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Scanned_Files"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.nuscan.fileprovider"
@@ -43,6 +55,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
