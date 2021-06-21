@@ -154,34 +154,44 @@ public class Scanned_Files extends AppCompatActivity {
 
     private void sharepdf(int position)
     {
-        try {
-            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
-            java.io.File file = new java.io.File(destination);
-            if(!file.exists())
-            {
-                file.mkdir();
-                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+        if(mElist.get(position).getPdf()==null)
+        {
+            try {
+                String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
+                java.io.File file = new java.io.File(destination);
+                if (!file.exists()) {
+                    file.mkdir();
+                    Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                }
+                String pdfname = destination + "/NuScanner_" + System.currentTimeMillis() + ".pdf";
+                java.io.File pdfFile = new java.io.File(pdfname);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(mElist.get(position).getImage()));
+                PdfDocument pdfDocument = new PdfDocument();
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+                page.getCanvas().drawBitmap(bitmap, 0, 0, null);
+                FileOutputStream outputStream = new FileOutputStream(pdfFile);
+                pdfDocument.finishPage(page);
+                pdfDocument.writeTo(outputStream);
+                pdfDocument.close();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("*/*");
+                Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscanner.fileprovider", pdfFile);
+                intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "NuScanner scanned file " + mElist.get(position).getTitle());
+                startActivity(Intent.createChooser(intent, "Share with.."));
+                mElist.get(position).setPdf(pdfuri.toString());
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
-            String pdfname = destination+"/NuScanner_"+System.currentTimeMillis()+".pdf";
-            java.io.File pdfFile = new java.io.File(pdfname);
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),Uri.parse(mElist.get(position).getImage()));
-            PdfDocument pdfDocument = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
-            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-            page.getCanvas().drawBitmap(bitmap,0,0,null);
-            FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            pdfDocument.finishPage(page);
-            pdfDocument.writeTo(outputStream);
-            pdfDocument.close();
+        }
+        else
+        {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
-            Uri pdfuri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider", pdfFile);
-            intent.putExtra(Intent.EXTRA_STREAM,pdfuri);
-            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScanner scanned file "+mElist.get(position).getTitle());
-            startActivity(Intent.createChooser(intent,"Share with.."));
-            mElist.get(position).setPdf(pdfuri.toString());
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getPdf()));
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScanner scanned file " + mElist.get(position).getTitle());
+            startActivity(Intent.createChooser(intent, "Share with.."));
         }
     }
 
