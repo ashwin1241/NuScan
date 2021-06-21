@@ -5,12 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".App_About">
-
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/abt_logo_img"
         android:layout_width="150sp"
         android:layout_height="150sp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30sp"
         android:src="@mipmap/ic_launcher_round"/>
+
+    <TextView
+        android:id="@+id/abt_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/abt_logo_img"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10sp"
+        android:elevation="5sp"
+        android:fontFamily="@font/amaranth_bold"
+        android:text="NuScan"
+        android:textColor="@color/black"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/para"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/abt_name"
+        android:layout_marginTop="40sp"
+        android:textSize="16sp"
+        android:fontFamily="@font/amaranth"
+        android:layout_marginStart="10sp"
+        android:layout_marginEnd="10sp"
+        android:text="Coding language: Java\nIDE Used: Android Studio\nStorage used: Device Internal Storage\nNation of Origin: India\nDeveloped by: Ashwin Avinash Wadatkar\nApp size: ~4mb\nAdfree: Atleast I developped it without any Ad pages\nPrivacy: Trust me, no data will be automatically leaked by the app, considering that this app is offline till you want to share files"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40sp"
+        android:fontFamily="@font/amaranth"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:text="This is my first full-fledged developed app..\n
+I hope you like it"/>
 
 </RelativeLayout>

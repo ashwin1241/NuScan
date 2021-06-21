@@ -17,10 +17,6 @@
             android:parentActivityName=".MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".App_Guide"
-            android:parentActivityName=".MainActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
         <activity
             android:name=".Launch_splashscreen"
             android:configChanges="orientation"
