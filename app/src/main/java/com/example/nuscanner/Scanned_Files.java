@@ -217,6 +217,8 @@ public class Scanned_Files extends AppCompatActivity {
             public void OnItemClicked(int position) {
                 Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
+                intent.putExtra("position",position);
+                intent.putExtra("card_id",card_id);
                 startActivity(intent);
             }
 

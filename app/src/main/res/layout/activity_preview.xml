@@ -16,9 +16,20 @@
         android:id="@+id/return_"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20sp"
+        android:layout_marginStart="50sp"
         android:text="Return"/>
+
+    <Button
+        android:id="@+id/edit_"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20sp"
+        android:layout_marginEnd="50sp"
+        android:text="Edit"/>
 
 </RelativeLayout>
