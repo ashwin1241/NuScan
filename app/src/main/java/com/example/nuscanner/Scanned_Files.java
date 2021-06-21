@@ -282,13 +282,14 @@ public class Scanned_Files extends AppCompatActivity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setTitle("Delete")
-        .setMessage("Are you sure you want to delete this document?")
+        .setMessage("Are you sure you want to delete this file?")
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mElist.remove(position);
                 mAdapter.notifyItemRemoved(position);
                 saveData(mElist);
+                Toast.makeText(Scanned_Files.this, "File deleted", Toast.LENGTH_SHORT).show();
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
