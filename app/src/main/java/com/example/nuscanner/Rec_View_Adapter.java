@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_View_Holder>{
 
-    private List<Card_item> arrayList;
+    private ArrayList<Card_item> arrayList;
     private int selecttype = 0;
     private OnItemClickListener mListener;
 
@@ -31,6 +31,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         void OnItemLongClicked(int position);
         void OnItemShared(int position);
         void OnTitleClicked(int position);
+        void NewListselect(int position, ArrayList<Card_item> list1);
     }
 
     public static class Rec_View_Holder extends RecyclerView.ViewHolder
@@ -51,63 +52,6 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
             card_share = itemView.findViewById(R.id.card_share);
             card_title = itemView.findViewById(R.id.card_title);
             card_date = itemView.findViewById(R.id.card_date);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(listener!=null)
-                    {
-                        int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION)
-                        {
-                            listener.OnItemClicked(position);
-                        }
-                    }
-                }
-            });
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if(listener!=null)
-                    {
-                        int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION)
-                        {
-                            listener.OnItemLongClicked(position);
-                        }
-                    }
-                    return false;
-                }
-            });
-
-            card_share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(listener!=null)
-                    {
-                        int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION)
-                        {
-                            listener.OnItemShared(position);
-                        }
-                    }
-                }
-            });
-
-            card_title.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(listener!=null)
-                    {
-                        int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION)
-                        {
-                            listener.OnTitleClicked(position);
-                        }
-                    }
-                }
-            });
 
         }
     }
@@ -145,6 +89,69 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
             holder.card_unselect.setVisibility(View.INVISIBLE);
             holder.card_select.setVisibility(View.INVISIBLE);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener!=null)
+                {
+                    int position = holder.getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION)
+                    {
+                        if(selecttype!=25)
+                        {
+                            mListener.OnItemClicked(position);
+                        }
+                        else
+                        {
+                            mListener.NewListselect(position,arrayList);
+                        }
+                    }
+                }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if(mListener!=null)
+                {
+                    int position = holder.getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION&&selecttype==0)
+                    {
+                        mListener.OnItemLongClicked(position);
+                    }
+                }
+                return false;
+            }
+        });
+
+        holder.card_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener!=null)
+                {
+                    int position = holder.getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION)
+                    {
+                        mListener.OnItemShared(position);
+                    }
+                }
+            }
+        });
+
+        holder.card_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener!=null)
+                {
+                    int position = holder.getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION&&selecttype==0)
+                    {
+                        mListener.OnTitleClicked(position);
+                    }
+                }
+            }
+        });
     }
 
     @Override

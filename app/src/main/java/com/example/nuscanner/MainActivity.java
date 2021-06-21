@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 search();
+                mAdapter.setSelecttype(25);
             }
         });
         search_cancel.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 page_sort.setVisibility(View.VISIBLE);
                 select_items.setVisibility(View.VISIBLE);
                 card_add.setVisibility(View.VISIBLE);
+                mAdapter.setSelecttype(0);
                 buildrecyclerview();
             }
         });
@@ -410,6 +412,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void OnTitleClicked(int position) {
                 openEditDialog(position);
+            }
+
+            @Override
+            public void NewListselect(int position, ArrayList<Card_item> list1) {
+                Intent intent = new Intent(MainActivity.this, Scanned_Files.class);
+                intent.putExtra("page_title",list1.get(position).getTitle());
+                intent.putExtra("card_id",list1.get(position).getId());
+                startActivity(intent);
             }
         });
     }
