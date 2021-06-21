@@ -1,4 +1,4 @@
-package com.example.nuscanner;
+package com.example.nuscan;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

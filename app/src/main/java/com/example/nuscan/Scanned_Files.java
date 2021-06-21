@@ -1,4 +1,4 @@
-package com.example.nuscanner;
+package com.example.nuscan;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -127,7 +126,7 @@ public class Scanned_Files extends AppCompatActivity {
         }
         String imigname = destination+"/"+page_title+System.currentTimeMillis()+".jpg";
         java.io.File imgFile = new java.io.File(imigname);
-        camuri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider",imgFile);
+        camuri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgFile);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,camuri);
         startActivityForResult(intent,132);
@@ -163,7 +162,7 @@ public class Scanned_Files extends AppCompatActivity {
                     file.mkdir();
                     Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
                 }
-                String pdfname = destination + "/NuScanner_" + System.currentTimeMillis() + ".pdf";
+                String pdfname = destination + "/NuScan_" + System.currentTimeMillis() + ".pdf";
                 java.io.File pdfFile = new java.io.File(pdfname);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(mElist.get(position).getImage()));
                 PdfDocument pdfDocument = new PdfDocument();
@@ -176,9 +175,9 @@ public class Scanned_Files extends AppCompatActivity {
                 pdfDocument.close();
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("*/*");
-                Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscanner.fileprovider", pdfFile);
+                Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
                 intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
-                intent.putExtra(Intent.EXTRA_SUBJECT, "NuScanner scanned file " + mElist.get(position).getTitle());
+                intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
                 startActivity(Intent.createChooser(intent, "Share with.."));
                 mElist.get(position).setPdf(pdfuri.toString());
             } catch (Exception e) {
@@ -190,7 +189,7 @@ public class Scanned_Files extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
             intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getPdf()));
-            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScanner scanned file " + mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
         }
     }
@@ -199,7 +198,7 @@ public class Scanned_Files extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
-        intent.putExtra(Intent.EXTRA_SUBJECT,"NuScanner scanned file "+mElist.get(position).getTitle());
+        intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan scanned file "+mElist.get(position).getTitle());
         startActivity(Intent.createChooser(intent,"Share with.."));
     }
 
@@ -324,7 +323,7 @@ public class Scanned_Files extends AppCompatActivity {
                 image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
                 outputStream.flush();
                 outputStream.close();
-                imguri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider",imgfile);
+                imguri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgfile);
             } catch (IOException e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }

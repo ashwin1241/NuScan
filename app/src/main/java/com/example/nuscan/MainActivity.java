@@ -1,4 +1,4 @@
-package com.example.nuscanner;
+package com.example.nuscan;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("NuScanner");
+        getSupportActionBar().setTitle("NuScan");
 
         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = simpleDateFormat.format(new Date());
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             case Calendar.SUNDAY: day = "Sun";
                 break;
         }
-        mElist.add(position, new Card_item("NuScanner_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
+        mElist.add(position, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
         mElist.get(position).setId(System.currentTimeMillis());
         mAdapter.notifyItemInserted(position);
         saveData(mElist);

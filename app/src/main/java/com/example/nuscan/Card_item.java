@@ -1,4 +1,4 @@
-package com.example.nuscanner;
+package com.example.nuscan;
 
 public class Card_item {
 

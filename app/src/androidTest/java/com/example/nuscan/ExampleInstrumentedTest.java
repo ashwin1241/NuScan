@@ -1,4 +1,4 @@
-package com.example.nuscanner;
+package com.example.nuscan;
 
 import android.content.Context;
 

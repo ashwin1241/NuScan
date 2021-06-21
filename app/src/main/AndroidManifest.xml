@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.nuscanner">
+    package="com.example.nuscan">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -12,9 +12,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NuScanner">
-        <activity android:name=".Launch_splashscreen"
-            android:theme="@style/Theme.NuScanner_new"
+        android:theme="@style/Theme.NuScan">
+        <activity android:name="com.example.nuscan.Launch_splashscreen"
+            android:theme="@style/Theme.NuScan_new"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -23,20 +23,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Preview"
+        <activity android:name="com.example.nuscan.Preview"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".Scanned_Files"
-            android:parentActivityName=".MainActivity"
+            android:name="com.example.nuscan.Scanned_Files"
+            android:parentActivityName="com.example.nuscan.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+        <activity android:name="com.example.nuscan.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.nuscanner.fileprovider"
+            android:authorities="com.example.nuscan.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
