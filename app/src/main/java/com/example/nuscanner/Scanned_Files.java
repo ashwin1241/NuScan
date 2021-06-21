@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -124,7 +125,7 @@ public class Scanned_Files extends AppCompatActivity {
             file.mkdir();
             Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
         }
-        String imigname = destination+"/NuScanner_"+System.currentTimeMillis()+".jpg";
+        String imigname = destination+"/"+page_title+System.currentTimeMillis()+".jpg";
         java.io.File imgFile = new java.io.File(imigname);
         camuri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider",imgFile);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -298,10 +299,19 @@ public class Scanned_Files extends AppCompatActivity {
             Bitmap image = null;
             try {
                 image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imguri);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                if(!file.exists())
+                {
+                    file.mkdir();
+                    Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                }
+                String imgname = file.getAbsolutePath()+"/"+page_title+System.currentTimeMillis()+".jpg";
+                File imgfile = new File(imgname);
+                FileOutputStream outputStream = new FileOutputStream(imgfile);
                 image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-                String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),image,page_title+System.currentTimeMillis(),null);
-                imguri = Uri.parse(path);
+                outputStream.flush();
+                outputStream.close();
+                imguri = FileProvider.getUriForFile(this,"com.example.nuscanner.fileprovider",imgfile);
             } catch (IOException e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -319,7 +329,7 @@ public class Scanned_Files extends AppCompatActivity {
                 Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
             }
         }
-        if(requestCode == 132 && resultCode == RESULT_OK && data != null)
+        if(requestCode == 132 && resultCode == RESULT_OK)
         {
             if(camuri!=null)
             {

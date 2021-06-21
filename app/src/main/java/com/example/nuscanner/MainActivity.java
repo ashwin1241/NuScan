@@ -490,9 +490,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 EditText asdf = view.findViewById(R.id.edit_title);
-                mElist.get(position).setTitle(asdf.getText().toString().trim());
-                mAdapter.notifyDataSetChanged();
-                saveData(mElist);
+                if(!(asdf.getText().toString().trim().equals("")||asdf.getText().toString().trim()==null))
+                {
+                    mElist.get(position).setTitle(asdf.getText().toString().trim());
+                    mAdapter.notifyDataSetChanged();
+                    saveData(mElist);
+                }
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

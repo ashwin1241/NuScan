@@ -14,18 +14,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NuScanner">
         <activity android:name=".Launch_splashscreen"
-            android:theme="@style/Theme.NuScanner_new">
+            android:theme="@style/Theme.NuScanner_new"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Preview" />
+        <activity android:name=".Preview"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Scanned_Files"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.nuscanner.fileprovider"
