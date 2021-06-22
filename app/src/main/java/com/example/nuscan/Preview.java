@@ -210,6 +210,7 @@ public class Preview extends AppCompatActivity {
                         mElist.remove(position);
                         saveData(mElist);
                         Toast.makeText(Preview.this, "File deleted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Preview.this, "Refresh the page to see changes", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 })

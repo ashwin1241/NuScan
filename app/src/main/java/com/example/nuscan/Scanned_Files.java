@@ -94,12 +94,25 @@ public class Scanned_Files extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-        touchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP|ItemTouchHelper.DOWN|ItemTouchHelper.START|ItemTouchHelper.END,0) {
+        touchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP|ItemTouchHelper.START|ItemTouchHelper.DOWN|ItemTouchHelper.END,0) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int fromposition = viewHolder.getAdapterPosition();
                 int toposition = target.getAdapterPosition();
-                Collections.swap(mElist,fromposition,toposition);
+                int i=0;
+                if(fromposition>=toposition)
+                {
+                    for (i = fromposition - 1; i >= toposition; i--) {
+                        Collections.swap(mElist, i+1, i );
+                    }
+                }
+                else
+                {
+                    for (i = fromposition + 1; i <= toposition; i++) {
+                        Collections.swap(mElist, i-1, i );
+                    }
+                }
+                //Collections.swap(mElist,fromposition,i);
                 recyclerView.getAdapter().notifyItemMoved(fromposition,toposition);
                 saveData(mElist);
                 return false;
@@ -208,9 +221,12 @@ public class Scanned_Files extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EditText asdf = view.findViewById(R.id.edit_title);
-                        mElist.get(position).setTitle(asdf.getText().toString().trim());
-                        mAdapter.notifyDataSetChanged();
-                        saveData(mElist);
+                        if(!(asdf.getText().toString().trim().equals("")||asdf.getText().toString().trim()==null))
+                        {
+                            mElist.get(position).setTitle(asdf.getText().toString().trim());
+                            mAdapter.notifyDataSetChanged();
+                            saveData(mElist);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
