@@ -29,7 +29,6 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
     {
         void OnItemClicked(int position);
         void OnTitleClicked(int position);
-        void OnItemLongClicked(int position);
     }
 
     public static class Rec_View_Sub_Holder extends RecyclerView.ViewHolder
@@ -54,18 +53,6 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
                             listener.OnItemClicked(position);
                         }
                     }
-                }
-            });
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int position = getAdapterPosition();
-                    if(position!=RecyclerView.NO_POSITION)
-                    {
-                        listener.OnItemLongClicked(position);
-                    }
-                    return false;
                 }
             });
 

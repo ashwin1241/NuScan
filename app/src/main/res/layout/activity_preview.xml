@@ -12,24 +12,26 @@
         android:layout_height="500sp"
         android:layout_marginTop="20sp"/>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/return_"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20sp"
-        android:layout_marginStart="50sp"
-        android:text="Return"/>
+        android:layout_marginStart="35sp"
+        android:text="Return"
+        android:textAlignment="center"/>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/edit_"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20sp"
-        android:layout_marginEnd="50sp"
-        android:text="Edit"/>
+        android:layout_marginEnd="35sp"
+        android:text="Edit"
+        android:textAlignment="center"/>
 
 </RelativeLayout>

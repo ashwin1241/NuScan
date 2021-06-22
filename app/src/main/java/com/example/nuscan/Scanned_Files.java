@@ -1,10 +1,12 @@
 package com.example.nuscan;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -31,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Scanned_Files extends AppCompatActivity {
 
@@ -47,6 +50,7 @@ public class Scanned_Files extends AppCompatActivity {
     private Uri camuri = null;
     private String image_name = null;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ItemTouchHelper touchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +94,23 @@ public class Scanned_Files extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+        touchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP|ItemTouchHelper.DOWN|ItemTouchHelper.START|ItemTouchHelper.END,0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromposition = viewHolder.getAdapterPosition();
+                int toposition = target.getAdapterPosition();
+                Collections.swap(mElist,fromposition,toposition);
+                recyclerView.getAdapter().notifyItemMoved(fromposition,toposition);
+                saveData(mElist);
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        touchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void saveData(ArrayList<Card_sub_item> eList2)
@@ -146,72 +166,6 @@ public class Scanned_Files extends AppCompatActivity {
         startActivityForResult(intent,132);
     }
 
-    private void shareitem(int position)
-    {
-        String[] sub_objects = {"PDF","JPG"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
-        builder.setItems(sub_objects, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch(which)
-                {
-                    case 0 : sharepdf(position);
-                        break;
-                    case 1 : sharejpg(position);
-                        break;
-                }
-            }
-        });
-        builder.create().show();
-    }
-
-    private void sharepdf(int position)
-    {
-        try {
-            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
-            java.io.File file = new java.io.File(destination);
-            if (!file.exists()) {
-                file.mkdir();
-                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
-            }
-            String pname;
-            if(mElist.get(position).getPdfname()==null)
-                pname = "NuScan_" + System.currentTimeMillis() + ".pdf";
-            else
-                pname = mElist.get(position).getPdfname();
-            String pdfname = destination + "/"+pname;
-            java.io.File pdfFile = new java.io.File(pdfname);
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(mElist.get(position).getImage()));
-            PdfDocument pdfDocument = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
-            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-            page.getCanvas().drawBitmap(bitmap, 0, 0, null);
-            FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            pdfDocument.finishPage(page);
-            pdfDocument.writeTo(outputStream);
-            pdfDocument.close();
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("*/*");
-            Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
-            intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
-            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
-            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
-            startActivity(Intent.createChooser(intent, "Share with.."));
-            mElist.get(position).setPdf(pdfuri.toString());
-            mElist.get(position).setPdfname(pname);
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void sharejpg(int position) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
-        intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
-        startActivity(Intent.createChooser(intent,"Share with.."));
-    }
-
     private void buildrecyclerview()
     {
         mRecyclerView = findViewById(R.id.sub_file_recview);
@@ -227,17 +181,16 @@ public class Scanned_Files extends AppCompatActivity {
                 Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
                 intent.putExtra("name",mElist.get(position).getName());
+                intent.putExtra("title","NuScan scanned file "+mElist.get(position).getTitle());
+                intent.putExtra("pdfname",mElist.get(position).getPdfname());
+                intent.putExtra("position",position);
+                intent.putExtra("card_id",card_id);
                 startActivity(intent);
             }
 
             @Override
             public void OnTitleClicked(int position) {
                 openEditDialog(position);
-            }
-
-            @Override
-            public void OnItemLongClicked(int position) {
-                openLongClickDialog(position);
             }
 
         });
@@ -266,48 +219,6 @@ public class Scanned_Files extends AppCompatActivity {
 
                     }
                 });
-        builder.create().show();
-    }
-
-    private void openLongClickDialog(int position)
-    {
-        String[] sub_objects = {"Delete","Share"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
-        builder.setItems(sub_objects, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch(which)
-                {
-                    case 0 : openDelDialog(position);
-                        break;
-                    case 1 : shareitem(position);
-                        break;
-                }
-            }
-        });
-        builder.create().show();
-    }
-
-    private void openDelDialog(int position)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
-        builder.setTitle("Delete")
-        .setMessage("Are you sure you want to delete this file?")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mElist.remove(position);
-                mAdapter.notifyItemRemoved(position);
-                saveData(mElist);
-                Toast.makeText(Scanned_Files.this, "File deleted", Toast.LENGTH_SHORT).show();
-            }
-        })
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
         builder.create().show();
     }
 

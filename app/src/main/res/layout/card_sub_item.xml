@@ -3,7 +3,8 @@
     android:layout_width="180sp"
     android:layout_height="225sp"
     android:padding="5sp"
-    android:layout_margin="5sp">
+    android:layout_margin="5sp"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -6,5 +6,15 @@
         android:icon="@drawable/ic_baseline_save_24"
         android:title="Save"
         app:showAsAction="ifRoom"/>
-
+    <item
+        android:id="@+id/preview_share"
+        android:icon="@drawable/ic_outline_share_241"
+        android:title="Save"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/preview_delete"
+        android:icon="@drawable/ic_outline_delete_24"
+        android:title="Save"
+        app:showAsAction="ifRoom"/>
 </menu>
