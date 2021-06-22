@@ -7,12 +7,18 @@
     tools:context=".Scanned_Files"
     android:background="#dedede">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/file_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sub_file_recview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#dedede"
         android:layout_margin="5sp"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageButton
         android:id="@+id/sub_item_camera"

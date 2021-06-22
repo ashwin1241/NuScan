@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView selection_cancel;
     private EditText searchfield;
     private ImageView search_cancel;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,16 @@ public class MainActivity extends AppCompatActivity {
         card_multiple_share = findViewById(R.id.card_share_multiple);
         searchfield = findViewById(R.id.searchfield);
         search_cancel = findViewById(R.id.search_cancel);
+        swipeRefreshLayout = findViewById(R.id.main_list_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData();
+                buildrecyclerview();
+                mAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         card_add.setOnClickListener(new View.OnClickListener() {
             @Override

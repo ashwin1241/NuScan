@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,11 +45,13 @@ public class Scanned_Files extends AppCompatActivity {
     private int temp_position;
     private Uri imguri = null;
     private Uri camuri = null;
+    private String image_name = null;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file);
+        setContentView(R.layout.activity_scanned_files);
         getSupportActionBar().setTitle("File");
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -74,6 +77,17 @@ public class Scanned_Files extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insert_camera_item(mElist.size());
+            }
+        });
+
+        swipeRefreshLayout = findViewById(R.id.file_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData();
+                buildrecyclerview();
+                mAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -124,7 +138,8 @@ public class Scanned_Files extends AppCompatActivity {
             file.mkdir();
             Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
         }
-        String imigname = destination+"/"+page_title+System.currentTimeMillis()+".jpg";
+        image_name = page_title+System.currentTimeMillis()+".jpg";
+        String imigname = destination+"/"+image_name;
         java.io.File imgFile = new java.io.File(imigname);
         camuri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgFile);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -216,8 +231,7 @@ public class Scanned_Files extends AppCompatActivity {
             public void OnItemClicked(int position) {
                 Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
-                intent.putExtra("position",position);
-                intent.putExtra("card_id",card_id);
+                intent.putExtra("name",mElist.get(position).getName());
                 startActivity(intent);
             }
 
@@ -317,7 +331,8 @@ public class Scanned_Files extends AppCompatActivity {
                     file.mkdir();
                     Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
                 }
-                String imgname = file.getAbsolutePath()+"/"+page_title+System.currentTimeMillis()+".jpg";
+                image_name = page_title+System.currentTimeMillis()+".jpg";
+                String imgname = file.getAbsolutePath()+"/"+image_name;
                 File imgfile = new File(imgname);
                 FileOutputStream outputStream = new FileOutputStream(imgfile);
                 image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
@@ -329,7 +344,7 @@ public class Scanned_Files extends AppCompatActivity {
             }
             if(imguri != null)
             {
-                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null));
+                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(imguri.toString());
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
@@ -345,7 +360,7 @@ public class Scanned_Files extends AppCompatActivity {
         {
             if(camuri!=null)
             {
-                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null));
+                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(camuri.toString());
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
