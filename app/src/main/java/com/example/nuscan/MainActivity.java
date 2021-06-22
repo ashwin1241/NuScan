@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -515,10 +516,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
             String pname;
-            if(subshare_list.get(position).getPdfname()==null)
-                pname = "NuScan_Batch" + System.currentTimeMillis() + ".pdf";
+            if(mElist.get(position).getPdfname()==null)
+            {
+                pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
+                mElist.get(position).setPdfname(pname);
+                saveData(mElist);
+            }
             else
-                pname = subshare_list.get(position).getPdfname();
+                pname = mElist.get(position).getPdfname();
             String pdfname = destination + "/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
@@ -537,7 +542,8 @@ public class MainActivity extends AppCompatActivity {
             intent.setType("*/*");
             Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
-            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan batch scanned file " + mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
         }
         catch (Exception e)
@@ -548,25 +554,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void shareJPG(int position)
     {
-        long card_id = mElist.get(position).getId();
-        SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        Gson gs = new Gson();
-        String js = sp.getString("sub_doc_list"+card_id,null);
-        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-        subshare_list = gs.fromJson(js,type);
-        if(subshare_list==null)
+        try
         {
-            subshare_list = new ArrayList<Card_sub_item>();
+            long card_id = mElist.get(position).getId();
+            SharedPreferences sp = getSharedPreferences("id_" + card_id, MODE_PRIVATE);
+            Gson gs = new Gson();
+            String js = sp.getString("sub_doc_list" + card_id, null);
+            Type type = new TypeToken<ArrayList<Card_sub_item>>() {
+            }.getType();
+            subshare_list = gs.fromJson(js, type);
+            if (subshare_list == null) {
+                subshare_list = new ArrayList<Card_sub_item>();
+            }
+            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            intent.setType("image/jpg");
+            ArrayList<Uri> mult_imgs = new ArrayList<Uri>();
+            for (Card_sub_item sub_item : subshare_list) {
+                mult_imgs.add(Uri.parse(sub_item.getImage()));
+            }
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mult_imgs);
+            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan batch scanned files " + mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
+            startActivity(Intent.createChooser(intent, "Share with.."));
         }
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/jpg");
-        ArrayList<Uri> mult_imgs = new ArrayList<>();
-        for(Card_sub_item sub_item : subshare_list)
+        catch (Exception e)
         {
-            mult_imgs.add(Uri.parse(sub_item.getImage()));
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM,mult_imgs);
-        startActivity(Intent.createChooser(intent,"Share with.."));
     }
 
     private void openDelDialog()

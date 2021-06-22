@@ -7,6 +7,7 @@ public class Card_item {
     private boolean isSelected;
     private long id;
     private String image;
+    private String pdfname;
 
     public Card_item(String mtitle, String mdate, boolean misSelected)
     {
@@ -53,5 +54,13 @@ public class Card_item {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getPdfname() {
+        return pdfname;
+    }
+
+    public void setPdfname(String pdfname) {
+        this.pdfname = pdfname;
     }
 }

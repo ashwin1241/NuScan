@@ -195,6 +195,7 @@ public class Scanned_Files extends AppCompatActivity {
             Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
             mElist.get(position).setPdf(pdfuri.toString());
             mElist.get(position).setPdfname(pname);
