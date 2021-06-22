@@ -6,6 +6,7 @@ public class Card_item {
     private String date;
     private boolean isSelected;
     private long id;
+    private String image;
 
     public Card_item(String mtitle, String mdate, boolean misSelected)
     {
@@ -44,5 +45,13 @@ public class Card_item {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

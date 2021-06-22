@@ -1,5 +1,6 @@
 package com.example.nuscan;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -67,7 +70,14 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         Card_item current_item = arrayList.get(position);
         holder.card_title.setText(current_item.getTitle());
         holder.card_date.setText(current_item.getDate());
-        holder.card_image.setImageResource(R.drawable.ic_sharp_insert_drive_file_90);
+        if(current_item.getImage()!=null)
+        {
+            Picasso.get().load(Uri.parse(current_item.getImage())).placeholder(R.drawable.ic_sharp_insert_drive_file_90).into(holder.card_image);
+        }
+        else
+        {
+            holder.card_image.setImageResource(R.drawable.ic_sharp_insert_drive_file_90);
+        }
         if(current_item.isSelected()==true)
         {
             holder.card_share.setVisibility(View.INVISIBLE);

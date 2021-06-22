@@ -106,7 +106,6 @@ public class Scanned_Files extends AppCompatActivity {
 
     private void loadData()
     {
-        String str;
         card_id = getIntent().getLongExtra("card_id",0);
         SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
         Gson gson = new Gson();
@@ -208,7 +207,7 @@ public class Scanned_Files extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getImage()));
-        intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan scanned file "+mElist.get(position).getTitle());
+        intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
         startActivity(Intent.createChooser(intent,"Share with.."));
     }
 

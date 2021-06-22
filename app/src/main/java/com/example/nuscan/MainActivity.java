@@ -3,6 +3,7 @@ package com.example.nuscan;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -10,7 +11,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -26,6 +32,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private Rec_View_Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<Card_item> mElist;
+    private ArrayList<Card_sub_item> subshare_list;
     private ArrayList<Integer> selected_items;
     private SimpleDateFormat simpleDateFormat;
     private String date;
@@ -67,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         loadData();
         buildrecyclerview();
+        loadimages();
 
         card_add = findViewById(R.id.card_add);
         card_delete = findViewById(R.id.card_delete);
@@ -198,6 +207,31 @@ public class MainActivity extends AppCompatActivity {
         {
             mElist = new ArrayList<Card_item>();
         }
+    }
+
+    private void loadimages()
+    {
+        ArrayList<Card_sub_item> carrier ;
+        long card_id = 0;
+        for(Card_item item : mElist)
+        {
+            card_id = item.getId();
+            SharedPreferences sp_sub = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+            Gson gs_sub = new Gson();
+            String js_sub = sp_sub.getString("sub_doc_list"+card_id,null);
+            Type type_sub = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+            carrier = gs_sub.fromJson(js_sub,type_sub);
+            if(carrier!=null&&carrier.size()>0)
+            {
+                item.setImage(carrier.get(0).getImage());
+            }
+            else
+            {
+                continue;
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+        saveData(mElist);
     }
 
     String day;
@@ -462,12 +496,77 @@ public class MainActivity extends AppCompatActivity {
 
     private void sharePDF(int position)
     {
-        Toast.makeText(this, "PDF shared", Toast.LENGTH_SHORT).show();
+        long card_id = mElist.get(position).getId();
+        SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+        Gson gs = new Gson();
+        String js = sp.getString("sub_doc_list"+card_id,null);
+        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+        subshare_list = gs.fromJson(js,type);
+        if(subshare_list==null)
+        {
+            subshare_list = new ArrayList<Card_sub_item>();
+        }
+        try
+        {
+            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
+            java.io.File file = new java.io.File(destination);
+            if (!file.exists()) {
+                file.mkdir();
+                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+            }
+            String pname;
+            if(subshare_list.get(position).getPdfname()==null)
+                pname = "NuScan_Batch" + System.currentTimeMillis() + ".pdf";
+            else
+                pname = subshare_list.get(position).getPdfname();
+            String pdfname = destination + "/"+pname;
+            java.io.File pdfFile = new java.io.File(pdfname);
+            FileOutputStream outputStream = new FileOutputStream(pdfFile);
+            PdfDocument pdfDocument = new PdfDocument();
+            for(int i=0;i<subshare_list.size();i++)
+            {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(subshare_list.get(i).getImage()));
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), i+1).create();
+                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+                page.getCanvas().drawBitmap(bitmap, 0, 0, null);
+                pdfDocument.finishPage(page);
+            }
+            pdfDocument.writeTo(outputStream);
+            pdfDocument.close();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("*/*");
+            Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
+            intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
+            startActivity(Intent.createChooser(intent, "Share with.."));
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void shareJPG(int position)
     {
-        Toast.makeText(this, "JPG shared", Toast.LENGTH_SHORT).show();
+        long card_id = mElist.get(position).getId();
+        SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+        Gson gs = new Gson();
+        String js = sp.getString("sub_doc_list"+card_id,null);
+        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+        subshare_list = gs.fromJson(js,type);
+        if(subshare_list==null)
+        {
+            subshare_list = new ArrayList<Card_sub_item>();
+        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/jpg");
+        ArrayList<Uri> mult_imgs = new ArrayList<>();
+        for(Card_sub_item sub_item : subshare_list)
+        {
+            mult_imgs.add(Uri.parse(sub_item.getImage()));
+        }
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM,mult_imgs);
+        startActivity(Intent.createChooser(intent,"Share with.."));
     }
 
     private void openDelDialog()
