@@ -168,44 +168,39 @@ public class Scanned_Files extends AppCompatActivity {
 
     private void sharepdf(int position)
     {
-        if(mElist.get(position).getPdf()==null)
-        {
-            try {
-                String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
-                java.io.File file = new java.io.File(destination);
-                if (!file.exists()) {
-                    file.mkdir();
-                    Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
-                }
-                String pdfname = destination + "/NuScan_" + System.currentTimeMillis() + ".pdf";
-                java.io.File pdfFile = new java.io.File(pdfname);
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(mElist.get(position).getImage()));
-                PdfDocument pdfDocument = new PdfDocument();
-                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
-                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-                page.getCanvas().drawBitmap(bitmap, 0, 0, null);
-                FileOutputStream outputStream = new FileOutputStream(pdfFile);
-                pdfDocument.finishPage(page);
-                pdfDocument.writeTo(outputStream);
-                pdfDocument.close();
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("*/*");
-                Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
-                intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
-                intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
-                startActivity(Intent.createChooser(intent, "Share with.."));
-                mElist.get(position).setPdf(pdfuri.toString());
-            } catch (Exception e) {
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        try {
+            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
+            java.io.File file = new java.io.File(destination);
+            if (!file.exists()) {
+                file.mkdir();
+                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
-        }
-        else
-        {
+            String pname;
+            if(mElist.get(position).getPdfname()==null)
+                pname = "NuScan_" + System.currentTimeMillis() + ".pdf";
+            else
+                pname = mElist.get(position).getPdfname();
+            String pdfname = destination + "/"+pname;
+            java.io.File pdfFile = new java.io.File(pdfname);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(mElist.get(position).getImage()));
+            PdfDocument pdfDocument = new PdfDocument();
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+            page.getCanvas().drawBitmap(bitmap, 0, 0, null);
+            FileOutputStream outputStream = new FileOutputStream(pdfFile);
+            pdfDocument.finishPage(page);
+            pdfDocument.writeTo(outputStream);
+            pdfDocument.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
-            intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(mElist.get(position).getPdf()));
+            Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
+            intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan scanned file " + mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
+            mElist.get(position).setPdf(pdfuri.toString());
+            mElist.get(position).setPdfname(pname);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
