@@ -13,10 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NuScan">
-        <activity android:name=".App_About"
-            android:parentActivityName=".MainActivity"
+        <activity
+            android:name=".App_Feedback"
             android:configChanges="orientation"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".App_About"
+            android:configChanges="orientation"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Launch_splashscreen"
             android:configChanges="orientation"

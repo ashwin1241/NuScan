@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -643,7 +642,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.about_menu, menu);
+        menuInflater.inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -652,9 +651,13 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.app_info: Intent intent = new Intent(MainActivity.this,App_About.class);
             startActivity(intent);
-            return true;
+            break;
+            case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
+            startActivity(intent1);
+            break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 }
