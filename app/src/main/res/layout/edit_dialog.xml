@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:padding="10dp">
 
     <EditText
         android:id="@+id/edit_title"
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_sharp_edit_40"
         android:drawablePadding="20dp"
-        android:textSize="16dp"
+        android:textSize="17dp"
         android:hint="Enter Title"
         android:layout_margin="10dp"
         />

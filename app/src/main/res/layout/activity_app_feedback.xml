@@ -13,7 +13,7 @@
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
         android:text="Type your feedback:"
-        android:textSize="25dp"
+        android:textSize="26dp"
         android:fontFamily="@font/amaranth"
         android:textColor="@color/black"/>
 
@@ -31,7 +31,7 @@
         android:minLines="5"
         android:maxLines="15"
         android:hint="Type feedback here"
-        android:textSize="16dp"
+        android:textSize="17dp"
         android:textColor="@color/black"
         android:fontFamily="@font/amaranth"/>
 

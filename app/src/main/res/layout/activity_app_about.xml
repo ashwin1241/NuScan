@@ -10,7 +10,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:src="@mipmap/ic_launcher_round"/>
 
     <TextView
@@ -23,15 +23,14 @@
         android:fontFamily="@font/amaranth_bold"
         android:text="NuScan"
         android:textColor="@color/black"
-        android:textSize="30dp" />
+        android:textSize="31dp" />
 
     <TextView
         android:id="@+id/para"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/abt_name"
-        android:layout_marginTop="40dp"
-        android:textSize="16dp"
+        android:layout_centerInParent="true"
+        android:textSize="17dp"
         android:fontFamily="@font/amaranth"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
@@ -42,19 +41,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/para"
-        android:layout_marginTop="40dp"
+        android:layout_above="@id/credits"
+        android:layout_marginBottom="40dp"
         android:text="Quick tutorial"
         android:textAlignment="center"/>
 
     <TextView
+        android:id="@+id/credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40dp"
         android:fontFamily="@font/amaranth"
-        android:textSize="16dp"
+        android:textSize="17dp"
         android:textAlignment="center"
         android:text="This is my first full-fledged developed app..\n
 I hope you like it"/>
