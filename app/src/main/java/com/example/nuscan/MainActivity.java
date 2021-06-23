@@ -259,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
         }
         mElist.add(position, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
         mElist.get(position).setId(System.currentTimeMillis());
+        String pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
+        mElist.get(position).setPdfname(pname);
         mAdapter.notifyItemInserted(position);
         saveData(mElist);
     }
@@ -515,15 +517,7 @@ public class MainActivity extends AppCompatActivity {
                 file.mkdir();
                 Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
-            String pname;
-            if(mElist.get(position).getPdfname()==null)
-            {
-                pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
-                mElist.get(position).setPdfname(pname);
-                saveData(mElist);
-            }
-            else
-                pname = mElist.get(position).getPdfname();
+            String pname = mElist.get(position).getPdfname();
             String pdfname = destination + "/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);

@@ -266,9 +266,11 @@ public class Scanned_Files extends AppCompatActivity {
             }
             if(imguri != null)
             {
+                String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
                 mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(imguri.toString());
+                mElist.get(temp_position).setPdfname(pname);
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
                 mAdapter.notifyDataSetChanged();
@@ -282,9 +284,11 @@ public class Scanned_Files extends AppCompatActivity {
         {
             if(camuri!=null)
             {
+                String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
                 mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
                 mElist.get(temp_position).setImage(camuri.toString());
+                mElist.get(temp_position).setPdfname(pname);
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
                 saveData(mElist);
                 mAdapter.notifyDataSetChanged();

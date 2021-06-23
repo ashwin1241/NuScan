@@ -150,11 +150,7 @@ public class Preview extends AppCompatActivity {
                 file.mkdir();
                 Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
-            String pname ;
-            if(pdfname12!=null)
-                pname=pdfname12;
-            else
-                pname="NuScan_"+System.currentTimeMillis()+".pdf";
+            String pname = pdfname12;
             String pdfname = destination + "/" + pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
