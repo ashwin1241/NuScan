@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/logo_splash"
-        android:layout_width="300sp"
-        android:layout_height="300sp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerInParent="true"
         android:src="@drawable/logo_transparent_resized"/>
 
@@ -20,12 +20,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80sp"
+        android:layout_marginBottom="80dp"
         android:fontFamily="@font/amaranth"
         android:text="Developped by"
         android:textAlignment="center"
         android:textColor="@color/dark_grey"
-        android:textSize="20sp" />
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/wmrkb"
@@ -33,11 +33,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50sp"
+        android:layout_marginBottom="50dp"
         android:fontFamily="@font/amaranth_bold"
         android:text="Ashwin Avinash Wadatkar"
         android:textAlignment="center"
         android:textColor="@color/dark_grey"
-        android:textSize="23sp" />
+        android:textSize="23dp" />
 
 </RelativeLayout>
