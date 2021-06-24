@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NuScan">
-        <activity android:name=".MainActivityTutorial2"></activity>
+        <activity android:name=".PreviewTutorial1"></activity>
+        <activity android:name=".Scanned_FilesTutorial1" />
+        <activity android:name=".MainActivityTutorial2" />
         <activity android:name=".MainActivityTutorial3" />
         <activity
             android:name=".MainActivityTutorial1"

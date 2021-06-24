@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Scanned_FilesTutorial1"
+    android:background="#dedede">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sub_file_recview_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#dedede"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/arrow8"
+        android:layout_width="100dp"
+        android:layout_height="400dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_arrow_down"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/arrow8"
+        android:layout_marginBottom="-115dp"
+        android:text="Tap this to add\n new camera\nimage"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/arrow9"
+        android:layout_width="70dp"
+        android:layout_height="280dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/ic_arrow_down"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/arrow9"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="-80dp"
+        android:layout_marginEnd="30dp"
+        android:text="Tap this to\nadd new gallery\nimage"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/arrow10"
+        android:layout_width="100dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="110dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_arrow_up"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/arrow10"
+        android:layout_marginTop="-100dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:text="Tap the title\nto change it"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Long tap the item to\ndrag it to change the\nordering of items"
+        android:textSize="20dp"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="130dp"
+        android:text="Single tap the item\nto preview it"
+        android:textSize="20dp"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageButton
+        android:id="@+id/sub_item_camera_tutorial"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:elevation="10dp"
+        android:background="@drawable/custom_button_shape"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_outline_photo_camera_60"/>
+
+    <ImageButton
+        android:id="@+id/sub_item_gallery_tutorial"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:elevation="10dp"
+        android:background="@drawable/custom_button_shape"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_outline_insert_photo_50"/>
+
+    <TextView
+        android:id="@+id/tutorial4_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="90dp"
+        android:layout_marginEnd="50dp"
+        android:text="Next"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="#0000FF"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/tutorial4_next_arrow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_baseline_arrow_right_alt_24"
+        android:layout_marginBottom="80dp"
+        android:layout_marginEnd="10dp"/>
+
+    <TextView
+        android:id="@+id/exit_tut4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="30dp"
+        android:text="Exit\nTutorial"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="#FF0000"
+        android:fontFamily="@font/amaranth"/>
+
+</RelativeLayout>

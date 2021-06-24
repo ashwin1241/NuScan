@@ -26,13 +26,15 @@ public class MainActivityTutorial3 extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivityTutorial3.this,Scanned_FilesTutorial1.class);
+                startActivity(intent);
             }
         });
         next_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivityTutorial3.this,Scanned_FilesTutorial1.class);
+                startActivity(intent);
             }
         });
         exit = findViewById(R.id.exit_tut3);

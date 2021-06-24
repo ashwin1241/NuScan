@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PreviewTutorial1">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_top_right"
+        android:layout_marginTop="-255dp"
+        android:layout_marginStart="-40dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_marginStart="20dp"
+        android:text="Tap this to save\nthe edited image"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/arrow13"
+        android:layout_width="100dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="-115dp"
+        android:layout_marginEnd="30dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_arrow_up"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/arrow13"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-95dp"
+        android:layout_marginEnd="10dp"
+        android:text="Tap this to share\nthe previewed\nimage"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/arrow11"
+        android:layout_width="100dp"
+        android:layout_height="400dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="-20dp"
+        android:layout_marginEnd="40dp"
+        android:src="@drawable/ic_arrow_down"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_above="@id/arrow11"
+        android:layout_marginBottom="-115dp"
+        android:text="Tap this to edit\n the previewed\nimage"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <ImageView
+        android:id="@+id/arrow12"
+        android:layout_width="100dp"
+        android:layout_height="400dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-20dp"
+        android:layout_marginStart="40dp"
+        android:src="@drawable/ic_arrow_down"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:layout_above="@id/arrow12"
+        android:layout_marginBottom="-115dp"
+        android:text="Tap this to return\n to previous tab"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="300dp"
+        android:text="Here is the previewed image"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/amaranth"/>
+
+    <TextView
+        android:id="@+id/tutorial_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:text="You are all set!\nTap here to end \nthe tutorial"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="#00FF00"
+        android:fontFamily="@font/amaranth"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/return_tutorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="35dp"
+        android:text="Return"
+        android:textAlignment="center"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/edit_tutorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="35dp"
+        android:text="Edit"
+        android:textAlignment="center"/>
+
+</RelativeLayout>
