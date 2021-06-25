@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         loadData();
         buildrecyclerview();
-        loadimages();
+        loadImages();
 
         card_add = findViewById(R.id.card_add);
         card_delete = findViewById(R.id.card_delete);
@@ -184,6 +184,12 @@ public class MainActivity extends AppCompatActivity {
                 buildrecyclerview();
             }
         });
+        card_multiple_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                share_bulk();
+            }
+        });
 
     }
 
@@ -209,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadimages()
+    private void loadImages()
     {
         ArrayList<Card_sub_item> carrier ;
         long card_id = 0;
@@ -498,18 +504,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void sharePDF(int position)
     {
-        long card_id = mElist.get(position).getId();
-        SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        Gson gs = new Gson();
-        String js = sp.getString("sub_doc_list"+card_id,null);
-        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-        subshare_list = gs.fromJson(js,type);
-        if(subshare_list==null)
-        {
-            subshare_list = new ArrayList<Card_sub_item>();
-        }
         try
         {
+            long card_id = mElist.get(position).getId();
+            SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+            Gson gs = new Gson();
+            String js = sp.getString("sub_doc_list"+card_id,null);
+            Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+            subshare_list = gs.fromJson(js,type);
+            if(subshare_list==null)
+            {
+                subshare_list = new ArrayList<Card_sub_item>();
+            }
             String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
             java.io.File file = new java.io.File(destination);
             if (!file.exists()) {
@@ -567,8 +573,147 @@ public class MainActivity extends AppCompatActivity {
             }
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mult_imgs);
             intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan batch scanned files " + mElist.get(position).getTitle());
-            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan batch scanned file "+mElist.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void share_bulk()
+    {
+        String[] options = {"PDF","JPG"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Share")
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(which)
+                        {
+                            case 0 : share_bulk_PDF();
+                                break;
+                            case 1 : share_bulk_JPG();
+                                break;
+                        }
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void share_bulk_PDF()
+    {
+        try
+        {
+            int j=0;
+            String destination = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString();
+            java.io.File file = new java.io.File(destination);
+            if (!file.exists()) {
+                file.mkdir();
+                Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+            }
+            String pname = "NuScan_Bulk_"+System.currentTimeMillis()+".pdf";
+            String pdfname = destination+"/"+pname;
+            java.io.File pdfFile = new java.io.File(pdfname);
+            FileOutputStream outputStream = new FileOutputStream(pdfFile);
+            PdfDocument pdfDocument = new PdfDocument();
+            for(Integer integer : selected_items)
+            {
+                long card_id = mElist.get((int) integer).getId();
+                SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+                Gson gs = new Gson();
+                String js = sp.getString("sub_doc_list"+card_id,null);
+                Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+                subshare_list = gs.fromJson(js,type);
+                if(subshare_list==null)
+                {
+                    subshare_list = new ArrayList<Card_sub_item>();
+                }
+                for(int i=0;i<subshare_list.size();i++)
+                {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(subshare_list.get(i).getImage()));
+                    PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), j+1).create();
+                    PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+                    page.getCanvas().drawBitmap(bitmap, 0, 0, null);
+                    pdfDocument.finishPage(page);
+                    j++;
+                }
+            }
+            pdfDocument.writeTo(outputStream);
+            pdfDocument.close();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("*/*");
+            Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
+            intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan Bulk scanned file " + date);
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan Bulk scanned file "+ date);
+            startActivity(Intent.createChooser(intent, "Share with.."));
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        mAdapter.setSelecttype(0);
+        for(int i=0;i<mElist.size();i++)
+        {
+            mElist.get(i).setSelected(false);
+        }
+        selected_items = new ArrayList<>();
+        mAdapter.notifyDataSetChanged();
+        card_select_all.setVisibility(View.INVISIBLE);
+        card_add.setVisibility(View.VISIBLE);
+        page_search.setVisibility(View.VISIBLE);
+        page_sort.setVisibility(View.VISIBLE);
+        selection_cancel.setVisibility(View.INVISIBLE);
+        card_delete.setVisibility(View.INVISIBLE);
+        card_multiple_share.setVisibility(View.INVISIBLE);
+        saveData(mElist);
+    }
+
+    private void share_bulk_JPG()
+    {
+        try
+        {
+            ArrayList<Uri> imagelist12 = new ArrayList<Uri>();
+            for(Integer integer : selected_items)
+            {
+                long card_id = mElist.get((int) integer).getId();
+                SharedPreferences sp = getSharedPreferences("id_" + card_id, MODE_PRIVATE);
+                Gson gs = new Gson();
+                String js = sp.getString("sub_doc_list" + card_id, null);
+                Type type = new TypeToken<ArrayList<Card_sub_item>>() {
+                }.getType();
+                subshare_list = gs.fromJson(js, type);
+                if (subshare_list == null) {
+                    subshare_list = new ArrayList<Card_sub_item>();
+                }
+                for(Card_sub_item sub_item : subshare_list)
+                {
+                    imagelist12.add(Uri.parse(sub_item.getImage()));
+                }
+            }
+            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            intent.setType("image/jpg");
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imagelist12);
+            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan Bulk scanned files " + date);
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan Bulk scanned file "+ date);
+            startActivity(Intent.createChooser(intent, "Share with.."));
+            mAdapter.setSelecttype(0);
+            for(int i=0;i<mElist.size();i++)
+            {
+                mElist.get(i).setSelected(false);
+            }
+            selected_items = new ArrayList<>();
+            mAdapter.notifyDataSetChanged();
+            card_select_all.setVisibility(View.INVISIBLE);
+            card_add.setVisibility(View.VISIBLE);
+            page_search.setVisibility(View.VISIBLE);
+            page_sort.setVisibility(View.VISIBLE);
+            selection_cancel.setVisibility(View.INVISIBLE);
+            card_delete.setVisibility(View.INVISIBLE);
+            card_multiple_share.setVisibility(View.INVISIBLE);
+            saveData(mElist);
         }
         catch (Exception e)
         {
