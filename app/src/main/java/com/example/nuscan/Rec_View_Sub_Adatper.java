@@ -1,16 +1,18 @@
 package com.example.nuscan;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
 
     private List<Card_sub_item> list;
     private OnItemClickListener mListener;
+    private Context context124;
 
     public void setOnItemClickListener(OnItemClickListener listener)
     {
@@ -73,9 +76,10 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
         }
     }
 
-    public Rec_View_Sub_Adatper(ArrayList<Card_sub_item> arrayList)
+    public Rec_View_Sub_Adatper(ArrayList<Card_sub_item> arrayList, Context context)
     {
         this.list = arrayList;
+        this.context124 = context;
     }
 
     @NonNull
@@ -92,7 +96,15 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
         holder.card_sub_title.setText(current_sub_item.getTitle());
         if(current_sub_item.getImage()!=null)
         {
-            Picasso.get().load(Uri.parse(current_sub_item.getImage())).fit().placeholder(R.drawable.ic_loader_svg).into(holder.card_sub_image);
+            try
+            {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context124.getContentResolver(), Uri.parse(current_sub_item.getImage()));
+                holder.card_sub_image.setImageBitmap(bitmap);
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(context124, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
         else
         {

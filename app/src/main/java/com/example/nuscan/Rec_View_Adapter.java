@@ -1,16 +1,18 @@
 package com.example.nuscan;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
     private ArrayList<Card_item> arrayList;
     private int selecttype = 0;
     private OnItemClickListener mListener;
+    private Context context124;
 
     public void setOnItemClickListener(OnItemClickListener listener)
     {
@@ -56,7 +59,10 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         }
     }
 
-    public Rec_View_Adapter(ArrayList<Card_item> list) { this.arrayList = list;}
+    public Rec_View_Adapter(ArrayList<Card_item> list, Context context) {
+        this.arrayList = list;
+        this.context124 = context;
+    }
 
     @Override
     public Rec_View_Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -72,7 +78,15 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         holder.card_date.setText(current_item.getDate());
         if(current_item.getImage()!=null)
         {
-            Picasso.get().load(Uri.parse(current_item.getImage())).fit().placeholder(R.drawable.ic_sharp_insert_drive_file_90).into(holder.card_image);
+            try
+            {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context124.getContentResolver(),Uri.parse(current_item.getImage()));
+                holder.card_image.setImageBitmap(bitmap);
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(context124, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
         else
         {

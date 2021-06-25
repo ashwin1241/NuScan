@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
     {
         mRecyclerView = findViewById(R.id.home_recview);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Rec_View_Adapter(mElist);
+        mAdapter = new Rec_View_Adapter(mElist,MainActivity.this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);

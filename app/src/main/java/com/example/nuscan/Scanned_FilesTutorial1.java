@@ -87,7 +87,7 @@ public class Scanned_FilesTutorial1 extends AppCompatActivity {
     {
         mRecyclerView = findViewById(R.id.sub_file_recview_tutorial);
         mLayoutManager = new GridLayoutManager(this,2);
-        mAdapter = new Rec_View_Sub_Adatper(mElist);
+        mAdapter = new Rec_View_Sub_Adatper(mElist,Scanned_FilesTutorial1.this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
