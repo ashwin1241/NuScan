@@ -44,6 +44,7 @@ public class Preview extends AppCompatActivity {
     private int position;
     private long card_id;
     private ArrayList<Card_sub_item> mElist;
+    private int edit_status=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,17 @@ public class Preview extends AppCompatActivity {
         position = getIntent().getIntExtra("position",0);
         card_id = getIntent().getLongExtra("card_id",0);
         previmg = findViewById(R.id.previmg);
-        previmg.setImageURI(imguri);
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + name);
+        if(file.exists())
+        {
+            previmg.setImageURI(imguri);
+            edit_status=1;
+        }
+        else
+        {
+            previmg.setImageResource(R.drawable.ic_outline_image_not_supported_24);
+            edit_status=0;
+        }
         return_ = findViewById(R.id.return_);
         return_.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +81,14 @@ public class Preview extends AppCompatActivity {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(edit_status==1)
+                {
 
+                }
+                if(edit_status==0)
+                {
+                    Toast.makeText(Preview.this, "Image not found", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

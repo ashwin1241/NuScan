@@ -2,6 +2,7 @@ package com.example.nuscan;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +93,11 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
     public void onBindViewHolder(@NonNull Rec_View_Sub_Holder holder, int position) {
         Card_sub_item current_sub_item = list.get(position);
         holder.card_sub_title.setText(current_sub_item.getTitle());
+        File file = new File(context124.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/" + current_sub_item.getName());
+        if(file.exists())
         holder.card_sub_image.setImageURI(Uri.parse(current_sub_item.getImage()));
+        else
+        holder.card_sub_image.setImageResource(R.drawable.ic_outline_image_not_supported_24);
     }
 
     @Override
