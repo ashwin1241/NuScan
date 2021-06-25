@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.pdf.PdfDocument;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -284,6 +286,13 @@ public class Scanned_Files extends AppCompatActivity {
         {
             if(camuri!=null)
             {
+                try {
+                    cameracorrection(image_name, MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),camuri));
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
                 mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
@@ -297,6 +306,37 @@ public class Scanned_Files extends AppCompatActivity {
             {
                 Toast.makeText(this, "Image could not be saved", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void cameracorrection(String name, Bitmap bitmap)
+    {
+        try
+        {
+            File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String path = file.getAbsolutePath() + "/" + name;
+            Matrix matrix = new Matrix();
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED);
+            switch (orientation)
+            {
+                case ExifInterface.ORIENTATION_ROTATE_90: matrix.postRotate(90);
+                break;
+                case ExifInterface.ORIENTATION_ROTATE_180: matrix.postRotate(180);
+                break;
+                case ExifInterface.ORIENTATION_ROTATE_270: matrix.postRotate(270);
+                break;
+            }
+            Bitmap bitmap1 = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+            File file1 = new File(path);
+            FileOutputStream outputStream = new FileOutputStream(file1);
+            bitmap1.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+            outputStream.flush();
+            outputStream.close();
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
