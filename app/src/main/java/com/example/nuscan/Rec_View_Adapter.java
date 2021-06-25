@@ -72,7 +72,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         holder.card_date.setText(current_item.getDate());
         if(current_item.getImage()!=null)
         {
-            Picasso.get().load(Uri.parse(current_item.getImage())).placeholder(R.drawable.ic_sharp_insert_drive_file_90).into(holder.card_image);
+            Picasso.get().load(Uri.parse(current_item.getImage())).fit().placeholder(R.drawable.ic_sharp_insert_drive_file_90).into(holder.card_image);
         }
         else
         {
