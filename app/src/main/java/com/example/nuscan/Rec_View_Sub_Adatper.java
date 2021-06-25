@@ -1,15 +1,12 @@
 package com.example.nuscan;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -94,26 +91,12 @@ public class Rec_View_Sub_Adatper extends RecyclerView.Adapter<Rec_View_Sub_Adat
     public void onBindViewHolder(@NonNull Rec_View_Sub_Holder holder, int position) {
         Card_sub_item current_sub_item = list.get(position);
         holder.card_sub_title.setText(current_sub_item.getTitle());
-        if(current_sub_item.getImage()!=null)
-        {
-            try
-            {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context124.getContentResolver(), Uri.parse(current_sub_item.getImage()));
-                holder.card_sub_image.setImageBitmap(bitmap);
-            }
-            catch (Exception e)
-            {
-                Toast.makeText(context124, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-        else
-        {
-            holder.card_sub_image.setImageResource(R.drawable.ic_loader_svg);
-        }
+        holder.card_sub_image.setImageURI(Uri.parse(current_sub_item.getImage()));
     }
 
     @Override
     public int getItemCount() {
         return list.size();
     }
+
 }

@@ -1,15 +1,12 @@
 package com.example.nuscan;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,15 +75,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         holder.card_date.setText(current_item.getDate());
         if(current_item.getImage()!=null)
         {
-            try
-            {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context124.getContentResolver(),Uri.parse(current_item.getImage()));
-                holder.card_image.setImageBitmap(bitmap);
-            }
-            catch (Exception e)
-            {
-                Toast.makeText(context124, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            holder.card_image.setImageURI(Uri.parse(current_item.getImage()));
         }
         else
         {
