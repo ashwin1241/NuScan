@@ -176,14 +176,14 @@ public class Preview extends AppCompatActivity {
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
-            Document document = new Document(new Rectangle(PageSize.A4));
+            Document document = new Document(new Rectangle(PageSize.A4),0,0,0,0);
             PdfWriter.getInstance(document,outputStream);
             document.open();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
             Image image = Image.getInstance(stream.toByteArray());
-            image.setAlignment(Image.MIDDLE);
             image.scaleToFit(new Rectangle(PageSize.A4));
+            image.setAlignment(Image.MIDDLE);
             document.add(image);
             stream.close();
             document.close();

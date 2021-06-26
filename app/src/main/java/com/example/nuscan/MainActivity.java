@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
             String pdfname = destination + "/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            Document document = new Document(new Rectangle(PageSize.A4));
+            Document document = new Document(new Rectangle(PageSize.A4),0,0,0,0);
             PdfWriter.getInstance(document,outputStream);
             document.open();
             for(int i=0;i<subshare_list.size();i++)
@@ -541,8 +541,8 @@ public class MainActivity extends AppCompatActivity {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
                 Image image = Image.getInstance(stream.toByteArray());
-                image.setAlignment(Image.MIDDLE);
                 image.scaleToFit(new Rectangle(PageSize.A4));
+                image.setAlignment(Image.MIDDLE);
                 document.add(image);
                 stream.close();
             }
@@ -629,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
             String pdfname = destination+"/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            Document document = new Document(new Rectangle(PageSize.A4));
+            Document document = new Document(new Rectangle(PageSize.A4),0,0,0,0);
             PdfWriter.getInstance(document,outputStream);
             document.open();
             for(Integer integer : selected_items)
@@ -650,8 +650,8 @@ public class MainActivity extends AppCompatActivity {
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
                     Image image = Image.getInstance(stream.toByteArray());
-                    image.setAlignment(Image.MIDDLE);
                     image.scaleToFit(new Rectangle(PageSize.A4));
+                    image.setAlignment(Image.MIDDLE);
                     document.add(image);
                     stream.close();
                 }
