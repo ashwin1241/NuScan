@@ -547,6 +547,7 @@ public class MainActivity extends AppCompatActivity {
                 float y = (PageSize.A4.getHeight() - image.getScaledHeight()) / 2;
                 image.setAbsolutePosition(x, y);
                 document.add(image);
+                document.newPage();
                 stream.close();
             }
             document.close();
@@ -659,6 +660,7 @@ public class MainActivity extends AppCompatActivity {
                     float y = (PageSize.A4.getHeight() - image.getScaledHeight()) / 2;
                     image.setAbsolutePosition(x, y);
                     document.add(image);
+                    document.newPage();
                     stream.close();
                 }
             }
