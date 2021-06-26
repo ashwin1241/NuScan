@@ -31,7 +31,13 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -526,17 +532,23 @@ public class MainActivity extends AppCompatActivity {
             String pdfname = destination + "/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            PdfDocument pdfDocument = new PdfDocument();
+            Document document = new Document(new Rectangle(PageSize.A4));
+            PdfWriter.getInstance(document,outputStream);
+            document.open();
             for(int i=0;i<subshare_list.size();i++)
             {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(subshare_list.get(i).getImage()));
-                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), i+1).create();
-                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-                page.getCanvas().drawBitmap(bitmap, 0, 0, null);
-                pdfDocument.finishPage(page);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
+                Image image = Image.getInstance(stream.toByteArray());
+                image.setAlignment(Image.MIDDLE);
+                image.scaleToFit(new Rectangle(PageSize.A4));
+                document.add(image);
+                stream.close();
             }
-            pdfDocument.writeTo(outputStream);
-            pdfDocument.close();
+            document.close();
+            outputStream.flush();
+            outputStream.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
             Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
@@ -617,7 +629,9 @@ public class MainActivity extends AppCompatActivity {
             String pdfname = destination+"/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            PdfDocument pdfDocument = new PdfDocument();
+            Document document = new Document(new Rectangle(PageSize.A4));
+            PdfWriter.getInstance(document,outputStream);
+            document.open();
             for(Integer integer : selected_items)
             {
                 long card_id = mElist.get((int) integer).getId();
@@ -633,15 +647,18 @@ public class MainActivity extends AppCompatActivity {
                 for(int i=0;i<subshare_list.size();i++)
                 {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(subshare_list.get(i).getImage()));
-                    PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), j+1).create();
-                    PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-                    page.getCanvas().drawBitmap(bitmap, 0, 0, null);
-                    pdfDocument.finishPage(page);
-                    j++;
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
+                    Image image = Image.getInstance(stream.toByteArray());
+                    image.setAlignment(Image.MIDDLE);
+                    image.scaleToFit(new Rectangle(PageSize.A4));
+                    document.add(image);
+                    stream.close();
                 }
             }
-            pdfDocument.writeTo(outputStream);
-            pdfDocument.close();
+            document.close();
+            outputStream.flush();
+            outputStream.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("*/*");
             Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
