@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.pdf.PdfDocument;
@@ -248,7 +249,7 @@ public class Scanned_Files extends AppCompatActivity {
             imguri = data.getData();
             Bitmap image = null;
             try {
-                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imguri);
+                image = correctedBitmap(imguri);
                 File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 if(!file.exists())
                 {
@@ -268,13 +269,6 @@ public class Scanned_Files extends AppCompatActivity {
             }
             if(imguri != null)
             {
-                try {
-                    cameracorrection(image_name, MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),imguri));
-                }
-                catch (Exception e)
-                {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
                 String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
                 mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
@@ -345,6 +339,38 @@ public class Scanned_Files extends AppCompatActivity {
         {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private Bitmap correctedBitmap(Uri uri)
+    {
+        try
+        {
+            Matrix matrix = new Matrix();
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uri);
+            int orientation;
+            Cursor cursor = getApplicationContext().getContentResolver().query(uri, new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+            if (cursor.getCount() != 1) {
+                orientation = -1;
+            }
+            cursor.moveToFirst();
+            orientation = cursor.getInt(0);
+            switch (orientation)
+            {
+                case 90: matrix.postRotate(90);
+                    break;
+                case 180: matrix.postRotate(180);
+                    break;
+                case 270: matrix.postRotate(270);
+                    break;
+            }
+            Bitmap bitmap1 = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+            return bitmap1;
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        return  null;
     }
 
 }
