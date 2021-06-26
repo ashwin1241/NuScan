@@ -182,7 +182,7 @@ public class Preview extends AppCompatActivity {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
             Image image = Image.getInstance(stream.toByteArray());
-            image.setAlignment(Image.ALIGN_CENTER);
+            image.setAlignment(Image.MIDDLE);
             image.scaleToFit(new Rectangle(PageSize.A4));
             document.add(image);
             stream.close();
