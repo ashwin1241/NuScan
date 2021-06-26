@@ -32,6 +32,7 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
         void OnItemShared(int position);
         void OnTitleClicked(int position);
         void NewListselect(int position, ArrayList<Card_item> list1);
+        void NewListshare(int position, ArrayList<Card_item> list1);
     }
 
     public static class Rec_View_Holder extends RecyclerView.ViewHolder
@@ -143,7 +144,14 @@ public class Rec_View_Adapter extends RecyclerView.Adapter<Rec_View_Adapter.Rec_
                     int position = holder.getAdapterPosition();
                     if(position!=RecyclerView.NO_POSITION)
                     {
-                        mListener.OnItemShared(position);
+                        if(selecttype!=25)
+                        {
+                            mListener.OnItemShared(position);
+                        }
+                        else
+                        {
+                            mListener.NewListshare(position,arrayList);
+                        }
                     }
                 }
             }

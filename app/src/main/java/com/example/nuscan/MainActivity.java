@@ -470,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void OnItemShared(int position) {
-                shareItem(position);
+                shareItem(position,mElist);
             }
 
             @Override
@@ -485,10 +485,15 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("card_id",list1.get(position).getId());
                 startActivity(intent);
             }
+
+            @Override
+            public void NewListshare(int position, ArrayList<Card_item> list1) {
+                shareItem(position,list1);
+            }
         });
     }
 
-    private void shareItem(int position)
+    private void shareItem(int position, ArrayList<Card_item> list1)
     {
         String[] options = {"PDF","JPG"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -498,9 +503,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch(which)
                 {
-                    case 0 : sharePDF(position);
+                    case 0 : sharePDF(position,list1);
                     break;
-                    case 1 : shareJPG(position);
+                    case 1 : shareJPG(position,list1);
                     break;
                 }
             }
@@ -508,11 +513,11 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void sharePDF(int position)
+    private void sharePDF(int position,ArrayList<Card_item> list1)
     {
         try
         {
-            long card_id = mElist.get(position).getId();
+            long card_id = list1.get(position).getId();
             SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
             Gson gs = new Gson();
             String js = sp.getString("sub_doc_list"+card_id,null);
@@ -528,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
                 file.mkdir();
                 Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
             }
-            String pname = mElist.get(position).getPdfname();
+            String pname = list1.get(position).getPdfname();
             String pdfname = destination + "/"+pname;
             java.io.File pdfFile = new java.io.File(pdfname);
             FileOutputStream outputStream = new FileOutputStream(pdfFile);
@@ -557,8 +562,8 @@ public class MainActivity extends AppCompatActivity {
             intent.setType("*/*");
             Uri pdfuri = FileProvider.getUriForFile(this, "com.example.nuscan.fileprovider", pdfFile);
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
-            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan batch scanned file " + mElist.get(position).getTitle());
-            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan batch scanned file " + list1.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+list1.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
         }
         catch (Exception e)
@@ -567,11 +572,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void shareJPG(int position)
+    private void shareJPG(int position,ArrayList<Card_item> list1)
     {
         try
         {
-            long card_id = mElist.get(position).getId();
+            long card_id = list1.get(position).getId();
             SharedPreferences sp = getSharedPreferences("id_" + card_id, MODE_PRIVATE);
             Gson gs = new Gson();
             String js = sp.getString("sub_doc_list" + card_id, null);
@@ -588,8 +593,8 @@ public class MainActivity extends AppCompatActivity {
                 mult_imgs.add(Uri.parse(sub_item.getImage()));
             }
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mult_imgs);
-            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan batch scanned files " + mElist.get(position).getTitle());
-            intent.putExtra(Intent.EXTRA_TEXT,"NuScan batch scanned file "+mElist.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan batch scanned files " + list1.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT,"NuScan batch scanned file "+list1.get(position).getTitle());
             startActivity(Intent.createChooser(intent, "Share with.."));
         }
         catch (Exception e)

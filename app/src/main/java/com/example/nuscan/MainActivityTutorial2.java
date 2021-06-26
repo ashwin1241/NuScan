@@ -122,6 +122,11 @@ public class MainActivityTutorial2 extends AppCompatActivity {
             public void NewListselect(int position, ArrayList<Card_item> list1) {
 
             }
+
+            @Override
+            public void NewListshare(int position, ArrayList<Card_item> list1) {
+
+            }
         });
     }
 
