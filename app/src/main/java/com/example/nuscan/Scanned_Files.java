@@ -268,6 +268,13 @@ public class Scanned_Files extends AppCompatActivity {
             }
             if(imguri != null)
             {
+                try {
+                    cameracorrection(image_name, MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(),imguri));
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
                 mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                 mAdapter.notifyItemInserted(temp_position);
