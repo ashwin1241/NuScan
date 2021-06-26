@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
@@ -182,8 +183,10 @@ public class Preview extends AppCompatActivity {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
             Image image = Image.getInstance(stream.toByteArray());
-            image.scaleToFit(new Rectangle(PageSize.A4));
-            image.setAlignment(Image.MIDDLE);
+            image.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+            float x = (PageSize.A4.getWidth() - image.getScaledWidth()) / 2;
+            float y = (PageSize.A4.getHeight() - image.getScaledHeight()) / 2;
+            image.setAbsolutePosition(x, y);
             document.add(image);
             stream.close();
             document.close();

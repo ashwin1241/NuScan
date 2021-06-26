@@ -542,7 +542,10 @@ public class MainActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
                 Image image = Image.getInstance(stream.toByteArray());
                 image.scaleToFit(new Rectangle(PageSize.A4));
-                image.setAlignment(Image.MIDDLE);
+                image.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+                float x = (PageSize.A4.getWidth() - image.getScaledWidth()) / 2;
+                float y = (PageSize.A4.getHeight() - image.getScaledHeight()) / 2;
+                image.setAbsolutePosition(x, y);
                 document.add(image);
                 stream.close();
             }
@@ -651,7 +654,10 @@ public class MainActivity extends AppCompatActivity {
                     bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
                     Image image = Image.getInstance(stream.toByteArray());
                     image.scaleToFit(new Rectangle(PageSize.A4));
-                    image.setAlignment(Image.MIDDLE);
+                    image.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+                    float x = (PageSize.A4.getWidth() - image.getScaledWidth()) / 2;
+                    float y = (PageSize.A4.getHeight() - image.getScaledHeight()) / 2;
+                    image.setAbsolutePosition(x, y);
                     document.add(image);
                     stream.close();
                 }
