@@ -587,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
                 subshare_list = new ArrayList<Card_sub_item>();
             }
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-            intent.setType("image/jpg");
+            intent.setType("*/*");
             ArrayList<Uri> mult_imgs = new ArrayList<Uri>();
             for (Card_sub_item sub_item : subshare_list) {
                 mult_imgs.add(Uri.parse(sub_item.getImage()));
@@ -724,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-            intent.setType("image/jpg");
+            intent.setType("*/*");
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imagelist12);
             intent.putExtra(Intent.EXTRA_SUBJECT,"NuScan Bulk scanned files " + date);
             intent.putExtra(Intent.EXTRA_TEXT,"NuScan Bulk scanned file "+ date);
