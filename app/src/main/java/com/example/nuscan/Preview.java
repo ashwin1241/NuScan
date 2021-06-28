@@ -1,6 +1,7 @@
 package com.example.nuscan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -9,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,6 +32,10 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageActivity;
+import com.theartofdev.edmodo.cropper.CropImageOptions;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -87,7 +94,18 @@ public class Preview extends AppCompatActivity {
             public void onClick(View v) {
                 if(edit_status==1)
                 {
-
+                    CropImage.activity(imguri)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setGuidelinesColor(Color.parseColor("#54E2DB"))
+                    .setMultiTouchEnabled(true)
+                    .setBorderCornerColor(Color.parseColor("#54E2DB"))
+                    .setBorderLineColor(Color.parseColor("#54E2DB"))
+                    .setAutoZoomEnabled(true)
+                    .setActivityTitle("Crop image")
+                    .setAllowFlipping(true)
+                    .setAllowRotation(true)
+                    .setInitialCropWindowRectangle(new Rect())
+                    .start(Preview.this);
                 }
                 if(edit_status==0)
                 {
@@ -131,7 +149,8 @@ public class Preview extends AppCompatActivity {
             outputStream.flush();
             outputStream.close();
             previmg.setImageURI(Uri.fromFile(imgfile));
-            Toast.makeText(this, "File : "+name+" edited and saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, name+" edited and saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Preview.this, "Refresh the page to see changes", Toast.LENGTH_SHORT).show();
         }
         catch (Exception e)
         {
@@ -260,4 +279,13 @@ public class Preview extends AppCompatActivity {
         editor.apply();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK)
+        {
+            imguri = CropImage.getActivityResult(data).getUri();
+            previmg.setImageURI(imguri);
+        }
+    }
 }
