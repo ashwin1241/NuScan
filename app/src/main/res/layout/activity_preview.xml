@@ -13,6 +13,18 @@
         android:layout_height="500dp"
         android:layout_marginTop="20dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/return_"
+        android:layout_marginBottom="20dp"
+        android:text="*To discard changes, click Return"
+        android:fontFamily="@font/amaranth"
+        android:textColor="#FF0000"
+        android:textSize="16dp"
+        android:textAlignment="center"/>
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/return_"
         android:layout_width="wrap_content"

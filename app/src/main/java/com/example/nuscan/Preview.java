@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
+import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -70,8 +72,8 @@ public class Preview extends AppCompatActivity {
         position = getIntent().getIntExtra("position",0);
         card_id = getIntent().getLongExtra("card_id",0);
         previmg = findViewById(R.id.previmg);
-        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + name);
-        if(file.exists())
+        File mainfile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + name);
+        if(mainfile.exists())
         {
             previmg.setImageURI(imguri);
             edit_status=1;
@@ -286,6 +288,19 @@ public class Preview extends AppCompatActivity {
         {
             imguri = CropImage.getActivityResult(data).getUri();
             previmg.setImageURI(imguri);
+            Intent intent = new Intent(Preview.this, DsPhotoEditorActivity.class);
+            intent.setData(imguri);
+            intent.putExtra(DsPhotoEditorConstants.DS_PHOTO_EDITOR_OUTPUT_DIRECTORY,"NuScan");
+            intent.putExtra(DsPhotoEditorConstants.DS_MAIN_BACKGROUND_COLOR,Color.parseColor("#DEDEDE"));
+            intent.putExtra(DsPhotoEditorConstants.DS_TOOL_BAR_BACKGROUND_COLOR,Color.parseColor("#54E2DB"));
+            intent.putExtra(DsPhotoEditorConstants.DS_PHOTO_EDITOR_TOOLS_TO_HIDE,new int[]{DsPhotoEditorActivity.TOOL_CROP,DsPhotoEditorActivity.TOOL_VIGNETTE,DsPhotoEditorActivity.TOOL_ROUND,DsPhotoEditorActivity.TOOL_FRAME,DsPhotoEditorActivity.TOOL_DRAW,DsPhotoEditorActivity.TOOL_ORIENTATION,DsPhotoEditorActivity.TOOL_PIXELATE,DsPhotoEditorActivity.TOOL_STICKER});
+            startActivityForResult(intent,45);
+        }
+        if(requestCode == 45 && resultCode == RESULT_OK)
+        {
+            imguri = data.getData();
+            previmg.setImageURI(imguri);
         }
     }
+
 }

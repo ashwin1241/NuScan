@@ -8,12 +8,14 @@ android {
 
     defaultConfig {
         applicationId "com.example.nuscanner"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        renderscriptTargetApi 21
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {
@@ -41,4 +43,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    implementation(name:'ds-photo-editor-sdk', ext:'aar')
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
 }
