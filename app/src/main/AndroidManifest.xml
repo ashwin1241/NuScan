@@ -17,11 +17,13 @@
         android:theme="@style/Theme.NuScan">
         <activity android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NuScan_additional"/>
         <activity android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorTextActivity"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NuScan_additional"/>
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
@@ -37,22 +39,18 @@
         <activity android:name=".MainActivityTutorial3"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".MainActivityTutorial1"
+        <activity android:name=".MainActivityTutorial1"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".App_Feedback"
+        <activity android:name=".App_Feedback"
             android:configChanges="orientation"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".App_About"
+        <activity android:name=".App_About"
             android:configChanges="orientation"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".Launch_splashscreen"
+        <activity android:name=".Launch_splashscreen"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NuScan_new">
@@ -62,10 +60,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Preview"
+        <activity android:name=".Preview"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Scanned_Files"
             android:configChanges="orientation"
