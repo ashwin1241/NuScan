@@ -16,7 +16,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.pdf.PdfDocument;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
