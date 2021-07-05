@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mElist, new Comparator<Card_item>() {
             @Override
             public int compare(Card_item o1, Card_item o2) {
-                return o2.getDate().trim().compareTo(o2.getDate().trim());
+                return o2.getDate().trim().compareTo(o1.getDate().trim());
             }
         });
         mAdapter.notifyDataSetChanged();
