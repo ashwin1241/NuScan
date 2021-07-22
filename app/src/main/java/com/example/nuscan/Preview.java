@@ -62,6 +62,9 @@ public class Preview extends AppCompatActivity {
         setContentView(R.layout.activity_preview);
         getSupportActionBar().setTitle("Preview");
 
+        card_id = getIntent().getLongExtra("card_id",0);
+        loadData();
+
         imguri = getIntent().getParcelableExtra("previmg");
         name = getIntent().getStringExtra("name");
         title = getIntent().getStringExtra("title");
@@ -235,16 +238,6 @@ public class Preview extends AppCompatActivity {
 
     private void deleteItem()
     {
-        card_id = getIntent().getLongExtra("card_id",0);
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("sub_doc_list"+card_id,null);
-        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-        mElist = gson.fromJson(json,type);
-        if(mElist==null)
-        {
-            mElist = new ArrayList<Card_sub_item>();
-        }
         AlertDialog.Builder builder = new AlertDialog.Builder(Preview.this);
         builder.setTitle("Delete")
                 .setMessage("Are you sure you want to delete this file?")
@@ -276,6 +269,19 @@ public class Preview extends AppCompatActivity {
         String json = gson.toJson(eList2);
         editor.putString("sub_doc_list"+card_id,json);
         editor.apply();
+    }
+
+    private void loadData()
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("sub_doc_list"+card_id,null);
+        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
+        mElist = gson.fromJson(json,type);
+        if(mElist==null)
+        {
+            mElist = new ArrayList<Card_sub_item>();
+        }
     }
 
     @Override
