@@ -55,6 +55,7 @@ public class Preview extends AppCompatActivity {
     private long card_id;
     private ArrayList<Card_sub_item> mElist;
     private int edit_status=0;
+    private String page_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class Preview extends AppCompatActivity {
         card_id = getIntent().getLongExtra("card_id",0);
         loadData();
 
+        page_title = getIntent().getStringExtra("page title");
         imguri = getIntent().getParcelableExtra("previmg");
         name = getIntent().getStringExtra("name");
         title = getIntent().getStringExtra("title");
@@ -247,7 +249,10 @@ public class Preview extends AppCompatActivity {
                         mElist.remove(position);
                         saveData(mElist);
                         Toast.makeText(Preview.this, "File deleted", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(Preview.this, "Refresh the page to see changes", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Preview.this, Scanned_Files.class);
+                        intent.putExtra("page_title",page_title);
+                        intent.putExtra("card_id",card_id);
+                        startActivity(intent);
                         finish();
                     }
                 })

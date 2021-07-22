@@ -203,6 +203,7 @@ public class Scanned_Files extends AppCompatActivity {
                 intent.putExtra("pdfname",mElist.get(position).getPdfname());
                 intent.putExtra("position",position);
                 intent.putExtra("card_id",card_id);
+                intent.putExtra("page title",page_title);
                 startActivity(intent);
             }
 
