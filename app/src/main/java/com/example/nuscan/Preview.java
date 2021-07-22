@@ -33,6 +33,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.ortiz.touchview.TouchImageView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 
 public class Preview extends AppCompatActivity {
 
-    private ImageView previmg;
+    private TouchImageView previmg;
     private ExtendedFloatingActionButton return_;
     private ExtendedFloatingActionButton edit;
     private Uri imguri;
