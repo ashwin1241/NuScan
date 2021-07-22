@@ -250,9 +250,51 @@ public class Scanned_Files extends AppCompatActivity {
         if(requestCode == 154 && resultCode == RESULT_OK && data != null)
         {
             ClipData clipData = data.getClipData();
-            for(int i=0;i<clipData.getItemCount();i++)
+            if(clipData!=null)
             {
-                imguri = clipData.getItemAt(i).getUri();
+                for(int i=0;i<clipData.getItemCount();i++)
+                {
+                    imguri = clipData.getItemAt(i).getUri();
+                    Bitmap image = null;
+                    try {
+                        image = correctedBitmap(imguri);
+                        File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                        if(!file.exists())
+                        {
+                            file.mkdir();
+                            Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                        }
+                        image_name = page_title+System.currentTimeMillis()+".jpg";
+                        String imgname = file.getAbsolutePath()+"/"+image_name;
+                        File imgfile = new File(imgname);
+                        FileOutputStream outputStream = new FileOutputStream(imgfile);
+                        image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                        outputStream.flush();
+                        outputStream.close();
+                        imguri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgfile);
+                    } catch (IOException e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    if(imguri != null)
+                    {
+                        String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
+                        mElist.add(temp_position,new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),null,null,image_name));
+                        mAdapter.notifyItemInserted(temp_position);
+                        mElist.get(temp_position).setImage(imguri.toString());
+                        mElist.get(temp_position).setPdfname(pname);
+                        Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                        saveData(mElist);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            else
+            {
+                imguri = data.getData();
                 Bitmap image = null;
                 try {
                     image = correctedBitmap(imguri);
@@ -276,7 +318,7 @@ public class Scanned_Files extends AppCompatActivity {
                 if(imguri != null)
                 {
                     String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                    mElist.add(temp_position,new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),null,null,image_name));
+                    mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
                     mAdapter.notifyItemInserted(temp_position);
                     mElist.get(temp_position).setImage(imguri.toString());
                     mElist.get(temp_position).setPdfname(pname);
