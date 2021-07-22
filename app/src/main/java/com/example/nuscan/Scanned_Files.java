@@ -248,7 +248,6 @@ public class Scanned_Files extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 154 && resultCode == RESULT_OK && data != null)
         {
-            List<Bitmap> imglist = new ArrayList<>();
             ClipData clipData = data.getClipData();
             for(int i=0;i<clipData.getItemCount();i++)
             {
