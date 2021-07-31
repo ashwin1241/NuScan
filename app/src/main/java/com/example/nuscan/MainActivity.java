@@ -788,14 +788,14 @@ public class MainActivity extends AppCompatActivity {
     private void openEditDialog(int position)
     {
         View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.edit_dialog,null);
+        EditText asdf = view.findViewById(R.id.edit_title);
+        asdf.setText(mElist.get(position).getTitle());
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Edit title")
-        .setMessage("Enter new title")
         .setView(view)
         .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                EditText asdf = view.findViewById(R.id.edit_title);
                 if(!(asdf.getText().toString().trim().equals("")||asdf.getText().toString().trim()==null))
                 {
                     mElist.get(position).setTitle(asdf.getText().toString().trim());

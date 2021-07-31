@@ -219,28 +219,27 @@ public class Scanned_Files extends AppCompatActivity {
     private void openEditDialog(int position)
     {
         View view = LayoutInflater.from(Scanned_Files.this).inflate(R.layout.edit_dialog,null);
+        EditText asdf = view.findViewById(R.id.edit_title);
+        asdf.setText(mElist.get(position).getTitle());
         AlertDialog.Builder builder = new AlertDialog.Builder(Scanned_Files.this);
         builder.setTitle("Edit title")
-                .setMessage("Enter new title")
-                .setView(view)
-                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText asdf = view.findViewById(R.id.edit_title);
-                        if(!(asdf.getText().toString().trim().equals("")||asdf.getText().toString().trim()==null))
-                        {
-                            mElist.get(position).setTitle(asdf.getText().toString().trim());
-                            mAdapter.notifyDataSetChanged();
-                            saveData(mElist);
-                        }
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
+        .setView(view)
+        .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!(asdf.getText().toString().trim().equals("")||asdf.getText().toString().trim()==null))
+                {
+                    mElist.get(position).setTitle(asdf.getText().toString().trim());
+                    mAdapter.notifyDataSetChanged();
+                    saveData(mElist);
+                }
+            }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+             }
+        });
         builder.create().show();
     }
 

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/edit_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_sharp_edit_40"
-        android:textSize="17dp"
-        android:hint="Enter Title"
         android:layout_margin="10dp"
+        android:drawableStart="@drawable/ic_sharp_edit_40"
+        android:drawablePadding="15dp"
+        android:hint="Enter Title"
         android:padding="10dp"
-        />
+        android:textSize="17dp" />
 
 </RelativeLayout>
