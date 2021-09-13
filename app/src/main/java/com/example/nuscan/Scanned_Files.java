@@ -35,8 +35,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class Scanned_Files extends AppCompatActivity {
@@ -55,6 +58,9 @@ public class Scanned_Files extends AppCompatActivity {
     private String image_name = null;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ItemTouchHelper touchHelper;
+    private ArrayList<Card_item> mElist1;
+    private String day;
+    private String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +77,9 @@ public class Scanned_Files extends AppCompatActivity {
         }
 
         loadData();
+        loadDataMain();
         buildrecyclerview();
+        checkIntent();
 
         sub_item_gallery = findViewById(R.id.sub_item_gallery);
         sub_item_camera = findViewById(R.id.sub_item_camera);
@@ -128,6 +136,46 @@ public class Scanned_Files extends AppCompatActivity {
             }
         });
         touchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void saveDataMain(ArrayList<Card_item> eList1)
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(eList1);
+        editor.putString("doc_list",json);
+        editor.apply();
+    }
+
+    private void loadDataMain()
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("doc_list",null);
+        Type type = new TypeToken<ArrayList<Card_item>>(){}.getType();
+        mElist1 = gson.fromJson(json,type);
+        if(mElist1==null)
+        {
+            mElist1 = new ArrayList<Card_item>();
+        }
+    }
+
+    private void checkIntent()
+    {
+        page_title = getIntent().getStringExtra("page_title");
+        if(page_title==null)
+        onActivityResult(155,RESULT_OK,getIntent());
+    }
+
+    private void saveData1(ArrayList<Card_sub_item> eList2, long card_id1)
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id1, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(eList2);
+        editor.putString("sub_doc_list"+card_id1,json);
+        editor.apply();
     }
 
     private void saveData(ArrayList<Card_sub_item> eList2)
@@ -282,7 +330,7 @@ public class Scanned_Files extends AppCompatActivity {
                         mElist.get(temp_position).setImage(imguri.toString());
                         mElist.get(temp_position).setPdfname(pname);
                         Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                        saveData(mElist);
+                        saveData1(mElist,card_id);
                         mAdapter.notifyDataSetChanged();
                     }
                     else
@@ -322,7 +370,117 @@ public class Scanned_Files extends AppCompatActivity {
                     mElist.get(temp_position).setImage(imguri.toString());
                     mElist.get(temp_position).setPdfname(pname);
                     Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                    saveData(mElist);
+                    saveData1(mElist,card_id);
+                    mAdapter.notifyDataSetChanged();
+                }
+                else
+                {
+                    Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        if(requestCode == 155 && resultCode == RESULT_OK && data != null)
+        {
+            int aret = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+            switch (aret)
+            {
+                case Calendar.MONDAY: day = "Mon";
+                    break;
+                case Calendar.TUESDAY: day = "Tue";
+                    break;
+                case Calendar.WEDNESDAY: day = "Wed";
+                    break;
+                case Calendar.THURSDAY: day = "Thu";
+                    break;
+                case Calendar.FRIDAY: day = "Fri";
+                    break;
+                case Calendar.SATURDAY: day = "Sat";
+                    break;
+                case Calendar.SUNDAY: day = "Sun";
+                    break;
+            }
+            mElist1.add(0, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
+            mElist1.get(0).setId(System.currentTimeMillis());
+            String pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
+            mElist1.get(0).setPdfname(pname);
+            saveDataMain(mElist1);
+            getSupportActionBar().setTitle("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()));
+            getSupportActionBar().setHomeButtonEnabled(true);
+            ClipData clipData = data.getClipData();
+            if(clipData!=null)
+            {
+                for(int i=0;i<clipData.getItemCount();i++)
+                {
+                    imguri = clipData.getItemAt(i).getUri();
+                    Bitmap image = null;
+                    try {
+                        image = correctedBitmap(imguri);
+                        File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                        if(!file.exists())
+                        {
+                            file.mkdir();
+                            Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                        }
+                        image_name = "NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+".jpg";
+                        String imgname = file.getAbsolutePath()+"/"+image_name;
+                        File imgfile = new File(imgname);
+                        FileOutputStream outputStream = new FileOutputStream(imgfile);
+                        image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                        outputStream.flush();
+                        outputStream.close();
+                        imguri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgfile);
+                    } catch (IOException e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    if(imguri != null)
+                    {
+                        String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
+                        mElist.add(0,new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,null,null,image_name));
+                        mAdapter.notifyItemInserted(temp_position);
+                        mElist.get(0).setImage(imguri.toString());
+                        mElist.get(0).setPdfname(pname12);
+                        Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                        saveData1(mElist,mElist1.get(0).getId());
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            else
+            {
+                imguri = data.getData();
+                Bitmap image = null;
+                try {
+                    image = correctedBitmap(imguri);
+                    File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    if(!file.exists())
+                    {
+                        file.mkdir();
+                        Toast.makeText(this, "Folder created successfully", Toast.LENGTH_SHORT).show();
+                    }
+                    image_name = "NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+System.currentTimeMillis()+".jpg";
+                    String imgname = file.getAbsolutePath()+"/"+image_name;
+                    File imgfile = new File(imgname);
+                    FileOutputStream outputStream = new FileOutputStream(imgfile);
+                    image.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                    imguri = FileProvider.getUriForFile(this,"com.example.nuscan.fileprovider",imgfile);
+                } catch (IOException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                if(imguri != null)
+                {
+                    String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
+                    mElist.add(0,new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",null,null,image_name));
+                    mAdapter.notifyItemInserted(temp_position);
+                    mElist.get(0).setImage(imguri.toString());
+                    mElist.get(0).setPdfname(pname12);
+                    Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                    saveData1(mElist,mElist1.get(0).getId());
                     mAdapter.notifyDataSetChanged();
                 }
                 else
