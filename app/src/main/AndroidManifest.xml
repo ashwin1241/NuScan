@@ -84,7 +84,6 @@
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="image/*"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
             </intent-filter>
         </activity>
         <activity
