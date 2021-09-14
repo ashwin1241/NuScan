@@ -37,6 +37,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -829,9 +830,61 @@ public class MainActivity extends AppCompatActivity {
             case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
             startActivity(intent1);
             break;
+            case R.id.file_backup: backupOptions();
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
+
+    private void backupOptions()
+    {
+        String[] options = {"Create a Backup","Search for an existing backup"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Backup")
+        .setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which)
+                {
+                    case 0: createBackup();
+                        break;
+                    case 1: searchBackup();
+                        break;
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void createBackup()
+    {
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
+        String path = file.getAbsolutePath();
+        if(!file.exists())
+        {
+            file.mkdir();
+            Toast.makeText(MainActivity.this, "Backup Folder created successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, path, Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void searchBackup()
+    {
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
+        String path = file.getAbsolutePath();
+        if(!file.exists())
+        {
+            Toast.makeText(MainActivity.this, "Backup Folder not found", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "Backup Folder located", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
