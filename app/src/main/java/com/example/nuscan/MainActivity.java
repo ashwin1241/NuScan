@@ -3,16 +3,21 @@ package com.example.nuscan;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -75,128 +80,168 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("NuScan");
 
-        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        date = simpleDateFormat.format(new Date());
-        selected_items = new ArrayList<>();
+        AskPermission();
 
-        loadData();
-        buildrecyclerview();
-        loadImages();
+        {
+            simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            date = simpleDateFormat.format(new Date());
+            selected_items = new ArrayList<>();
 
-        card_add = findViewById(R.id.card_add);
-        card_delete = findViewById(R.id.card_delete);
-        page_sort = findViewById(R.id.page_sort);
-        page_search = findViewById(R.id.page_search);
-        select_items = findViewById(R.id.select_items);
-        selection_cancel = findViewById(R.id.selection_cancel);
-        card_select_all = findViewById(R.id.card_select_all);
-        card_multiple_share = findViewById(R.id.card_share_multiple);
-        searchfield = findViewById(R.id.searchfield);
-        search_cancel = findViewById(R.id.search_cancel);
-        swipeRefreshLayout = findViewById(R.id.main_list_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadData();
-                buildrecyclerview();
-                mAdapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
+            loadData();
+            buildrecyclerview();
+            loadImages();
 
-        card_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                insert_item(0);
-            }
-        });
-
-        card_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDelDialog();
-            }
-        });
-
-        select_items.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(1);
-                mAdapter.notifyDataSetChanged();
-                card_select_all.setVisibility(View.VISIBLE);
-                card_add.setVisibility(View.INVISIBLE);
-                page_search.setVisibility(View.INVISIBLE);
-                page_sort.setVisibility(View.INVISIBLE);
-                selection_cancel.setVisibility(View.VISIBLE);
-            }
-        });
-        selection_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(0);
-                for(int i=0;i<mElist.size();i++)
-                {
-                    mElist.get(i).setSelected(false);
+            card_add = findViewById(R.id.card_add);
+            card_delete = findViewById(R.id.card_delete);
+            page_sort = findViewById(R.id.page_sort);
+            page_search = findViewById(R.id.page_search);
+            select_items = findViewById(R.id.select_items);
+            selection_cancel = findViewById(R.id.selection_cancel);
+            card_select_all = findViewById(R.id.card_select_all);
+            card_multiple_share = findViewById(R.id.card_share_multiple);
+            searchfield = findViewById(R.id.searchfield);
+            search_cancel = findViewById(R.id.search_cancel);
+            swipeRefreshLayout = findViewById(R.id.main_list_refresh);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadData();
+                    buildrecyclerview();
+                    mAdapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
-                selected_items = new ArrayList<>();
-                mAdapter.notifyDataSetChanged();
-                card_select_all.setVisibility(View.INVISIBLE);
-                card_add.setVisibility(View.VISIBLE);
-                page_search.setVisibility(View.VISIBLE);
-                page_sort.setVisibility(View.VISIBLE);
-                selection_cancel.setVisibility(View.INVISIBLE);
-                card_delete.setVisibility(View.INVISIBLE);
-                card_multiple_share.setVisibility(View.INVISIBLE);
-            }
-        });
-        card_select_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(1);
-                selected_items = new ArrayList<>();
-                for(int i=0;i<mElist.size();i++)
-                {
-                    mElist.get(i).setSelected(true);
-                    selected_items.add(i);
-                }
-                mAdapter.notifyDataSetChanged();
-                card_delete.setVisibility(View.VISIBLE);
-                card_multiple_share.setVisibility(View.VISIBLE);
-            }
-        });
-        page_sort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortItems();
-            }
-        });
-        page_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search();
-                mAdapter.setSelecttype(25);
-            }
-        });
-        search_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchfield.setVisibility(View.INVISIBLE);
-                search_cancel.setVisibility(View.INVISIBLE);
-                page_search.setVisibility(View.VISIBLE);
-                page_sort.setVisibility(View.VISIBLE);
-                select_items.setVisibility(View.VISIBLE);
-                card_add.setVisibility(View.VISIBLE);
-                mAdapter.setSelecttype(0);
-                buildrecyclerview();
-            }
-        });
-        card_multiple_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                share_bulk();
-            }
-        });
+            });
 
+            card_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    insert_item(0);
+                }
+            });
+
+            card_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openDelDialog();
+                }
+            });
+
+            select_items.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(1);
+                    mAdapter.notifyDataSetChanged();
+                    card_select_all.setVisibility(View.VISIBLE);
+                    card_add.setVisibility(View.INVISIBLE);
+                    page_search.setVisibility(View.INVISIBLE);
+                    page_sort.setVisibility(View.INVISIBLE);
+                    selection_cancel.setVisibility(View.VISIBLE);
+                }
+            });
+            selection_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(0);
+                    for (int i = 0; i < mElist.size(); i++) {
+                        mElist.get(i).setSelected(false);
+                    }
+                    selected_items = new ArrayList<>();
+                    mAdapter.notifyDataSetChanged();
+                    card_select_all.setVisibility(View.INVISIBLE);
+                    card_add.setVisibility(View.VISIBLE);
+                    page_search.setVisibility(View.VISIBLE);
+                    page_sort.setVisibility(View.VISIBLE);
+                    selection_cancel.setVisibility(View.INVISIBLE);
+                    card_delete.setVisibility(View.INVISIBLE);
+                    card_multiple_share.setVisibility(View.INVISIBLE);
+                }
+            });
+            card_select_all.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(1);
+                    selected_items = new ArrayList<>();
+                    for (int i = 0; i < mElist.size(); i++) {
+                        mElist.get(i).setSelected(true);
+                        selected_items.add(i);
+                    }
+                    mAdapter.notifyDataSetChanged();
+                    card_delete.setVisibility(View.VISIBLE);
+                    card_multiple_share.setVisibility(View.VISIBLE);
+                }
+            });
+            page_sort.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sortItems();
+                }
+            });
+            page_search.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    search();
+                    mAdapter.setSelecttype(25);
+                }
+            });
+            search_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchfield.setVisibility(View.INVISIBLE);
+                    search_cancel.setVisibility(View.INVISIBLE);
+                    page_search.setVisibility(View.VISIBLE);
+                    page_sort.setVisibility(View.VISIBLE);
+                    select_items.setVisibility(View.VISIBLE);
+                    card_add.setVisibility(View.VISIBLE);
+                    mAdapter.setSelecttype(0);
+                    buildrecyclerview();
+                }
+            });
+            card_multiple_share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    share_bulk();
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        {
+            switch (requestCode)
+            {
+                case 1:
+                {
+                    if(grantResults.length>0&&grantResults[0]== PackageManager.PERMISSION_GRANTED)
+                    {
+
+                    }
+                    else
+                    {
+                        if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE))
+                        {
+                            AskPermission();
+                        }
+                        else
+                        {
+                            finish();
+                            System.exit(0);
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    private void AskPermission()
+    {
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }
     }
 
     private void saveData(ArrayList<Card_item> eList1)
@@ -868,7 +913,22 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
+        }
+        try {
+            File bckp = new File(path+"/NuScan Backup_"+new SimpleDateFormat("dd/MM/yyyy").format(new Date())+"_"+new SimpleDateFormat("HH:mm:ss").format(new Date())+".pdf");
+            FileOutputStream fileOutputStream = new FileOutputStream(bckp);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document,fileOutputStream);
+            document.open();
+            document.close();
+            writer.flush();
+            writer.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            Toast.makeText(MainActivity.this, "Backup generated", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
