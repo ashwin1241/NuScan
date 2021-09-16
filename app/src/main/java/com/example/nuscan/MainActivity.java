@@ -865,7 +865,6 @@ public class MainActivity extends AppCompatActivity {
         {
             file.mkdir();
             Toast.makeText(MainActivity.this, "Backup Folder created successfully", Toast.LENGTH_SHORT).show();
-            Toast.makeText(MainActivity.this, path, Toast.LENGTH_SHORT).show();
         }
         else
         {
