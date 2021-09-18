@@ -904,7 +904,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createBackup()
     {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan_Backup");
         String path = file.getAbsolutePath();
         if(!file.exists())
         {
@@ -916,7 +916,7 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
         }
         try {
-            File bckp = new File(path+"/NuScan Backup_"+new SimpleDateFormat("dd/MM/yyyy").format(new Date())+"_"+new SimpleDateFormat("HH:mm:ss").format(new Date())+".pdf");
+            File bckp = new File(path+"/NuScan_Backup_"+new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"_"+new SimpleDateFormat("HH:mm:ss").format(new Date())+".pdf");
             FileOutputStream fileOutputStream = new FileOutputStream(bckp);
             Document document = new Document();
             PdfWriter writer = PdfWriter.getInstance(document,fileOutputStream);

@@ -14,7 +14,8 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NuScan">
+        android:theme="@style/Theme.NuScan"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity"
             android:configChanges="orientation"
