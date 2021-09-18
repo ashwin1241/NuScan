@@ -875,75 +875,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
             startActivity(intent1);
             break;
-            case R.id.file_backup: backupOptions();
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    private void backupOptions()
-    {
-        String[] options = {"Create a Backup","Search for an existing backup"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Backup")
-        .setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which)
-                {
-                    case 0: createBackup();
-                        break;
-                    case 1: searchBackup();
-                        break;
-                }
-            }
-        });
-        builder.create().show();
-    }
-
-    private void createBackup()
-    {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan_Backup");
-        String path = file.getAbsolutePath();
-        if(!file.exists())
-        {
-            file.mkdir();
-            Toast.makeText(MainActivity.this, "Backup Folder created successfully", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            //Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
-        }
-        try {
-            File bckp = new File(path+"/NuScan_Backup_"+new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"_"+new SimpleDateFormat("HH:mm:ss").format(new Date())+".pdf");
-            FileOutputStream fileOutputStream = new FileOutputStream(bckp);
-            Document document = new Document();
-            PdfWriter writer = PdfWriter.getInstance(document,fileOutputStream);
-            document.open();
-            document.close();
-            writer.flush();
-            writer.close();
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            Toast.makeText(MainActivity.this, "Backup generated", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void searchBackup()
-    {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
-        String path = file.getAbsolutePath();
-        if(!file.exists())
-        {
-            Toast.makeText(MainActivity.this, "Backup Folder not found", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(MainActivity.this, "Backup Folder located", Toast.LENGTH_SHORT).show();
-        }
     }
 
 }
