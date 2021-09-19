@@ -91,7 +91,23 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            AskPermission();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("To start scanning, the app needs to access files from internal storage, like images. Pls proceed to allow the app to access these items.")
+            .setTitle("Permission required")
+            .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    AskPermission();
+                }
+            })
+            .setNegativeButton("Cancel & Exit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    System.exit(0);
+                }
+            })
+            .create().show();
         }
 
         {
