@@ -960,8 +960,7 @@ public class MainActivity extends AppCompatActivity {
     private void createLocalBackup()
     {
         String folderPath;
-        String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getParentFile().getAbsolutePath()+"/NuScan Backup";
-        File file = new File(path1);
+        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
         if(!file.exists())
         {
             file.mkdirs();
@@ -981,8 +980,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadFromLocalBackup()
     {
         String folderPath;
-        String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getParentFile().getAbsolutePath()+"/NuScan Backup";
-        File file = new File(path1);
+        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
         if(!file.exists())
         {
             Toast.makeText(MainActivity.this, "No Backups were generated", Toast.LENGTH_SHORT).show();
