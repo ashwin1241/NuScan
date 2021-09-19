@@ -224,9 +224,11 @@ public class MainActivity extends AppCompatActivity {
             return Environment.isExternalStorageManager();
         else
         {
-            int a = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE);
-            int b = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            return a==PackageManager.PERMISSION_GRANTED && b == PackageManager.PERMISSION_GRANTED;
+            int b = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE);
+            if(b==PackageManager.PERMISSION_GRANTED)
+                return true;
+            else
+                return false;
         }
     }
 
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
         }
     }
 
@@ -258,13 +260,13 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 1)
         {
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults [1] == PackageManager.PERMISSION_GRANTED)
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
 
             }
             else
             {
-                if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.MANAGE_EXTERNAL_STORAGE))
+                if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE))
                 {
                     AskPermission();
                 }
