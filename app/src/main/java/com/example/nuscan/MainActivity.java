@@ -1,6 +1,7 @@
 package com.example.nuscan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -21,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -43,8 +45,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,7 +85,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("NuScan");
 
-        AskPermission();
+        if(permission())
+        {
+
+        }
+        else
+        {
+            AskPermission();
+        }
 
         {
             simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -206,41 +218,81 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    private boolean permission()
+    {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
+            return Environment.isExternalStorageManager();
+        else
         {
-            switch (requestCode)
-            {
-                case 1:
-                {
-                    if(grantResults.length>0&&grantResults[0]== PackageManager.PERMISSION_GRANTED)
-                    {
-
-                    }
-                    else
-                    {
-                        if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE))
-                        {
-                            AskPermission();
-                        }
-                        else
-                        {
-                            finish();
-                            System.exit(0);
-                        }
-                    }
-                }
-                break;
-            }
+            int a = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE);
+            int b = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            return a==PackageManager.PERMISSION_GRANTED && b == PackageManager.PERMISSION_GRANTED;
         }
     }
 
     private void AskPermission()
     {
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
         {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+            try
+            {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                intent.addCategory("android.intent.category.DEFAULT");
+                intent.setData(Uri.parse(String.format("package:%s",new Object[]{getApplicationContext().getPackageName()})));
+                startActivityForResult(intent,2000);
+            }
+            catch (Exception e)
+            {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(intent,2000);
+            }
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 1)
+        {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults [1] == PackageManager.PERMISSION_GRANTED)
+            {
+
+            }
+            else
+            {
+                if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.MANAGE_EXTERNAL_STORAGE))
+                {
+                    AskPermission();
+                }
+                else
+                {
+                    finish();
+                    System.exit(0);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 2000)
+        {
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
+            {
+                if(Environment.isExternalStorageManager())
+                {
+
+                }
+                else
+                {
+
+                }
+            }
         }
     }
 
@@ -875,10 +927,144 @@ public class MainActivity extends AppCompatActivity {
             case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
             startActivity(intent1);
             break;
+            case R.id.app_backup:   backupRoutine();
+            break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void backupRoutine()
+    {
+        String[] options = {"Create a local Backup","Restore from a local Backup"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Backup")
+        .setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which)
+                {
+                    case 0: createLocalBackup();
+                        break;
+                    case 1: loadFromLocalBackup();
+                        break;
+                }
+            }
+        })
+        .create().show();
+    }
+
+    private void createLocalBackup()
+    {
+        String folderPath;
+        String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getParentFile().getAbsolutePath()+"/NuScan Backup";
+        File file = new File(path1);
+        if(!file.exists())
+        {
+            file.mkdirs();
+        }
+        folderPath = file.getAbsolutePath();
+        if(file.exists())
+        {
+            Toast.makeText(MainActivity.this, "Backup folder created successfully", Toast.LENGTH_SHORT).show();
+            generateBackup(folderPath);
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "Could not create Backup Folder", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadFromLocalBackup()
+    {
+        String folderPath;
+        String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getParentFile().getAbsolutePath()+"/NuScan Backup";
+        File file = new File(path1);
+        if(!file.exists())
+        {
+            Toast.makeText(MainActivity.this, "No Backups were generated", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            folderPath = file.getAbsolutePath();
+
+        }
+    }
+
+    private void generateBackup(String path)
+    {
+        try
+        {
+            File file = new File(path + "/Backup " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + " " + new SimpleDateFormat("HH:mm").format(new Date()) + ".txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            PrintWriter printWriter = new PrintWriter(fileOutputStream);
+            File imgbackup = new File(path + "/Image Backup");
+            if (!imgbackup.exists())
+                imgbackup.mkdirs();
+            ArrayList<Card_sub_item> tempList12;
+            for (Card_item item : mElist) {
+                printWriter.println("ItemStart:");
+                printWriter.flush();
+                printWriter.println(item.getTitle());
+                printWriter.flush();
+                printWriter.println(item.getDate());
+                printWriter.flush();
+                printWriter.println(item.isSelected());
+                printWriter.flush();
+                printWriter.println(item.getId());
+                printWriter.flush();
+                printWriter.println(item.getImage());
+                printWriter.flush();
+                printWriter.println(item.getPdfname());
+                printWriter.flush();
+                printWriter.println("SubItemsStart:");
+                long id = item.getId();
+                SharedPreferences sp_sub = getSharedPreferences("id_" + id, MODE_PRIVATE);
+                Gson gs_sub = new Gson();
+                String js_sub = sp_sub.getString("sub_doc_list" + id, null);
+                Type type_sub = new TypeToken<ArrayList<Card_sub_item>>() {
+                }.getType();
+                tempList12 = gs_sub.fromJson(js_sub, type_sub);
+                if (tempList12 != null && tempList12.size() > 0) {
+                    for(Card_sub_item sub_item : tempList12)
+                    {
+                        FileChannel source = new FileInputStream(sub_item.getImage()).getChannel();
+                        FileChannel destination = new FileOutputStream(new File(imgbackup.getAbsolutePath()+"/"+sub_item.getImageName())).getChannel();
+                        destination.transferFrom(source,0,source.size());
+                        if(source!=null)
+                            source.close();
+                        if(destination!=null)
+                            destination.close();
+                        printWriter.println("SubItemStart:");
+                        printWriter.flush();
+                        printWriter.println(sub_item.getTitle());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getImage());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getPdf());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getImageName());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getPdfname());
+                        printWriter.flush();
+                    }
+                }
+                printWriter.println("ItemEnd");
+                printWriter.flush();
+            }
+            printWriter.flush();
+            printWriter.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

@@ -40,7 +40,7 @@ public Card_sub_item(String title1, String image1, String pdf1, String imgname1)
         this.pdf = pdf;
     }
 
-    public String getName() {
+    public String getImageName() {
         return imgname;
     }
 
