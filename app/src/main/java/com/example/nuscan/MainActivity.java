@@ -1,21 +1,28 @@
 package com.example.nuscan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -38,8 +45,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,128 +85,233 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("NuScan");
 
-        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        date = simpleDateFormat.format(new Date());
-        selected_items = new ArrayList<>();
+        if(permission())
+        {
 
-        loadData();
-        buildrecyclerview();
-        loadImages();
-
-        card_add = findViewById(R.id.card_add);
-        card_delete = findViewById(R.id.card_delete);
-        page_sort = findViewById(R.id.page_sort);
-        page_search = findViewById(R.id.page_search);
-        select_items = findViewById(R.id.select_items);
-        selection_cancel = findViewById(R.id.selection_cancel);
-        card_select_all = findViewById(R.id.card_select_all);
-        card_multiple_share = findViewById(R.id.card_share_multiple);
-        searchfield = findViewById(R.id.searchfield);
-        search_cancel = findViewById(R.id.search_cancel);
-        swipeRefreshLayout = findViewById(R.id.main_list_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadData();
-                buildrecyclerview();
-                mAdapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-
-        card_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                insert_item(0);
-            }
-        });
-
-        card_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDelDialog();
-            }
-        });
-
-        select_items.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(1);
-                mAdapter.notifyDataSetChanged();
-                card_select_all.setVisibility(View.VISIBLE);
-                card_add.setVisibility(View.INVISIBLE);
-                page_search.setVisibility(View.INVISIBLE);
-                page_sort.setVisibility(View.INVISIBLE);
-                selection_cancel.setVisibility(View.VISIBLE);
-            }
-        });
-        selection_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(0);
-                for(int i=0;i<mElist.size();i++)
-                {
-                    mElist.get(i).setSelected(false);
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("To start scanning, the app needs to access files from internal storage, like images. Pls proceed to allow the app to access these items.")
+            .setTitle("Permission required")
+            .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    AskPermission();
                 }
-                selected_items = new ArrayList<>();
-                mAdapter.notifyDataSetChanged();
-                card_select_all.setVisibility(View.INVISIBLE);
-                card_add.setVisibility(View.VISIBLE);
-                page_search.setVisibility(View.VISIBLE);
-                page_sort.setVisibility(View.VISIBLE);
-                selection_cancel.setVisibility(View.INVISIBLE);
-                card_delete.setVisibility(View.INVISIBLE);
-                card_multiple_share.setVisibility(View.INVISIBLE);
-            }
-        });
-        card_select_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.setSelecttype(1);
-                selected_items = new ArrayList<>();
-                for(int i=0;i<mElist.size();i++)
-                {
-                    mElist.get(i).setSelected(true);
-                    selected_items.add(i);
+            })
+            .setNegativeButton("Cancel & Exit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    System.exit(0);
                 }
-                mAdapter.notifyDataSetChanged();
-                card_delete.setVisibility(View.VISIBLE);
-                card_multiple_share.setVisibility(View.VISIBLE);
-            }
-        });
-        page_sort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortItems();
-            }
-        });
-        page_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search();
-                mAdapter.setSelecttype(25);
-            }
-        });
-        search_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchfield.setVisibility(View.INVISIBLE);
-                search_cancel.setVisibility(View.INVISIBLE);
-                page_search.setVisibility(View.VISIBLE);
-                page_sort.setVisibility(View.VISIBLE);
-                select_items.setVisibility(View.VISIBLE);
-                card_add.setVisibility(View.VISIBLE);
-                mAdapter.setSelecttype(0);
-                buildrecyclerview();
-            }
-        });
-        card_multiple_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                share_bulk();
-            }
-        });
+            })
+            .create().show();
+        }
 
+        {
+            simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            date = simpleDateFormat.format(new Date());
+            selected_items = new ArrayList<>();
+
+            loadData();
+            buildrecyclerview();
+            loadImages();
+
+            card_add = findViewById(R.id.card_add);
+            card_delete = findViewById(R.id.card_delete);
+            page_sort = findViewById(R.id.page_sort);
+            page_search = findViewById(R.id.page_search);
+            select_items = findViewById(R.id.select_items);
+            selection_cancel = findViewById(R.id.selection_cancel);
+            card_select_all = findViewById(R.id.card_select_all);
+            card_multiple_share = findViewById(R.id.card_share_multiple);
+            searchfield = findViewById(R.id.searchfield);
+            search_cancel = findViewById(R.id.search_cancel);
+            swipeRefreshLayout = findViewById(R.id.main_list_refresh);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadData();
+                    buildrecyclerview();
+                    mAdapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+
+            card_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    insert_item(0);
+                }
+            });
+
+            card_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openDelDialog();
+                }
+            });
+
+            select_items.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(1);
+                    mAdapter.notifyDataSetChanged();
+                    card_select_all.setVisibility(View.VISIBLE);
+                    card_add.setVisibility(View.INVISIBLE);
+                    page_search.setVisibility(View.INVISIBLE);
+                    page_sort.setVisibility(View.INVISIBLE);
+                    selection_cancel.setVisibility(View.VISIBLE);
+                }
+            });
+            selection_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(0);
+                    for (int i = 0; i < mElist.size(); i++) {
+                        mElist.get(i).setSelected(false);
+                    }
+                    selected_items = new ArrayList<>();
+                    mAdapter.notifyDataSetChanged();
+                    card_select_all.setVisibility(View.INVISIBLE);
+                    card_add.setVisibility(View.VISIBLE);
+                    page_search.setVisibility(View.VISIBLE);
+                    page_sort.setVisibility(View.VISIBLE);
+                    selection_cancel.setVisibility(View.INVISIBLE);
+                    card_delete.setVisibility(View.INVISIBLE);
+                    card_multiple_share.setVisibility(View.INVISIBLE);
+                }
+            });
+            card_select_all.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.setSelecttype(1);
+                    selected_items = new ArrayList<>();
+                    for (int i = 0; i < mElist.size(); i++) {
+                        mElist.get(i).setSelected(true);
+                        selected_items.add(i);
+                    }
+                    mAdapter.notifyDataSetChanged();
+                    card_delete.setVisibility(View.VISIBLE);
+                    card_multiple_share.setVisibility(View.VISIBLE);
+                }
+            });
+            page_sort.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sortItems();
+                }
+            });
+            page_search.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    search();
+                    mAdapter.setSelecttype(25);
+                }
+            });
+            search_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchfield.setVisibility(View.INVISIBLE);
+                    search_cancel.setVisibility(View.INVISIBLE);
+                    page_search.setVisibility(View.VISIBLE);
+                    page_sort.setVisibility(View.VISIBLE);
+                    select_items.setVisibility(View.VISIBLE);
+                    card_add.setVisibility(View.VISIBLE);
+                    mAdapter.setSelecttype(0);
+                    buildrecyclerview();
+                }
+            });
+            card_multiple_share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    share_bulk();
+                }
+            });
+        }
+
+    }
+
+    private boolean permission()
+    {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
+            return Environment.isExternalStorageManager();
+        else
+        {
+            int b = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE);
+            if(b==PackageManager.PERMISSION_GRANTED)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    private void AskPermission()
+    {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
+        {
+            try
+            {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                intent.addCategory("android.intent.category.DEFAULT");
+                intent.setData(Uri.parse(String.format("package:%s",new Object[]{getApplicationContext().getPackageName()})));
+                startActivityForResult(intent,2000);
+            }
+            catch (Exception e)
+            {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(intent,2000);
+            }
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 1)
+        {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+
+            }
+            else
+            {
+                if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE))
+                {
+                    AskPermission();
+                }
+                else
+                {
+                    finish();
+                    System.exit(0);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 2000)
+        {
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R)
+            {
+                if(Environment.isExternalStorageManager())
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        }
     }
 
     private void saveData(ArrayList<Card_item> eList1)
@@ -830,16 +945,17 @@ public class MainActivity extends AppCompatActivity {
             case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
             startActivity(intent1);
             break;
-            case R.id.file_backup: backupOptions();
+            case R.id.app_backup:   backupRoutine();
+            break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
-    private void backupOptions()
+    private void backupRoutine()
     {
-        String[] options = {"Create a Backup","Search for an existing backup"};
+        String[] options = {"Create a local Backup","Restore from a local Backup"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Backup")
         .setItems(options, new DialogInterface.OnClickListener() {
@@ -847,42 +963,123 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which)
                 {
-                    case 0: createBackup();
+                    case 0: createLocalBackup();
                         break;
-                    case 1: searchBackup();
+                    case 1: loadFromLocalBackup();
                         break;
                 }
             }
-        });
-        builder.create().show();
+        })
+        .create().show();
     }
 
-    private void createBackup()
+    private void createLocalBackup()
     {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
-        String path = file.getAbsolutePath();
+        String folderPath;
+        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
         if(!file.exists())
         {
-            file.mkdir();
-            Toast.makeText(MainActivity.this, "Backup Folder created successfully", Toast.LENGTH_SHORT).show();
+            file.mkdirs();
+        }
+        folderPath = file.getAbsolutePath();
+        if(file.exists())
+        {
+            Toast.makeText(MainActivity.this, "Backup folder created successfully", Toast.LENGTH_SHORT).show();
+            generateBackup(folderPath);
         }
         else
         {
-            Toast.makeText(MainActivity.this, "Backup Folder already exists", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Could not create Backup Folder", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void searchBackup()
+    private void loadFromLocalBackup()
     {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/NuScan Backup");
-        String path = file.getAbsolutePath();
+        String folderPath;
+        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
         if(!file.exists())
         {
-            Toast.makeText(MainActivity.this, "Backup Folder not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "No Backups were generated", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Toast.makeText(MainActivity.this, "Backup Folder located", Toast.LENGTH_SHORT).show();
+            folderPath = file.getAbsolutePath();
+
+        }
+    }
+
+    private void generateBackup(String path)
+    {
+        try
+        {
+            File file = new File(path + "/Backup " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + " " + new SimpleDateFormat("HH:mm").format(new Date()) + ".txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            PrintWriter printWriter = new PrintWriter(fileOutputStream);
+            File imgbackup = new File(path + "/Image Backup");
+            if (!imgbackup.exists())
+                imgbackup.mkdirs();
+            ArrayList<Card_sub_item> tempList12;
+            for (Card_item item : mElist) {
+                printWriter.println("ItemStart:");
+                printWriter.flush();
+                printWriter.println(item.getTitle());
+                printWriter.flush();
+                printWriter.println(item.getDate());
+                printWriter.flush();
+                printWriter.println(item.isSelected());
+                printWriter.flush();
+                printWriter.println(item.getId());
+                printWriter.flush();
+                printWriter.println(item.getImage());
+                printWriter.flush();
+                printWriter.println(item.getPdfname());
+                printWriter.flush();
+                printWriter.println("SubItemsStart:");
+                long id = item.getId();
+                SharedPreferences sp_sub = getSharedPreferences("id_" + id, MODE_PRIVATE);
+                Gson gs_sub = new Gson();
+                String js_sub = sp_sub.getString("sub_doc_list" + id, null);
+                Type type_sub = new TypeToken<ArrayList<Card_sub_item>>() {
+                }.getType();
+                tempList12 = gs_sub.fromJson(js_sub, type_sub);
+                if (tempList12 != null && tempList12.size() > 0) {
+                    for(Card_sub_item sub_item : tempList12)
+                    {
+                        FileChannel source = new FileInputStream(sub_item.getImage()).getChannel();
+                        FileChannel destination = new FileOutputStream(new File(imgbackup.getAbsolutePath()+"/"+sub_item.getImageName())).getChannel();
+                        destination.transferFrom(source,0,source.size());
+                        if(source!=null)
+                            source.close();
+                        if(destination!=null)
+                            destination.close();
+                        printWriter.println("SubItemStart:");
+                        printWriter.flush();
+                        printWriter.println(sub_item.getTitle());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getImage());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getPdf());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getImageName());
+                        printWriter.flush();
+                        printWriter.println(sub_item.getPdfname());
+                        printWriter.flush();
+                    }
+                }
+                printWriter.println("ItemEnd");
+                printWriter.flush();
+            }
+            printWriter.flush();
+            printWriter.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

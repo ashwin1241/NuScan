@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/file_backup"
-        android:icon="@drawable/ic_round_settings_backup_restore_40"
+        android:id="@+id/app_backup"
+        android:icon="@drawable/ic_round_autorenew_40"
         android:title="Backup"
         app:showAsAction="ifRoom"/>
     <item

@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 public class Scanned_Files extends AppCompatActivity {
 
@@ -246,7 +245,7 @@ public class Scanned_Files extends AppCompatActivity {
             public void OnItemClicked(int position) {
                 Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
-                intent.putExtra("name",mElist.get(position).getName());
+                intent.putExtra("name",mElist.get(position).getImageName());
                 intent.putExtra("title","NuScan scanned file "+mElist.get(position).getTitle());
                 intent.putExtra("pdfname",mElist.get(position).getPdfname());
                 intent.putExtra("position",position);
