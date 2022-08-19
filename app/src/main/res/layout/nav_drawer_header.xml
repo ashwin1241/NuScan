@@ -2,25 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="164dp"
+    android:layout_height="wrap_content"
     android:background="@color/title_color"
     android:gravity="bottom"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.MaterialComponents.Dark">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:src="@mipmap/ic_launcher_round"
-        android:layout_marginLeft="10dp"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/app_username"
-        android:text="Ashwin"
+        android:text="Welcome, Ashwin"
+        android:layout_gravity="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        android:paddingTop="8dp"
-        android:layout_marginLeft="10dp"/>
+        android:fontFamily="@font/amaranth_bold"
+        android:textSize="18dp"
+        android:layout_marginTop="-25dp"/>
 
 </LinearLayout>

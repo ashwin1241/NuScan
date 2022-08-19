@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView =findViewById(R.id.main_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
 
         if(permission())
         {
@@ -961,41 +962,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-//        @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.main_menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.app_info: Intent intent = new Intent(MainActivity.this,App_About.class);
-//            startActivity(intent);
-//            break;
-//            case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
-//            startActivity(intent1);
-//            break;
-//            case R.id.app_backup:   backupRoutine();
-//            break;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//        return true;
-//    }
-
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.app_info: Intent intent = new Intent(MainActivity.this,App_About.class);
+            case R.id.app_info:
+            {
+                if(drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(MainActivity.this, App_About.class);
                 startActivity(intent);
+            }
                 break;
-            case R.id.app_feedback: Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
+            case R.id.app_feedback:
+            {
+                if(drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent1 = new Intent(MainActivity.this,App_Feedback.class);
                 startActivity(intent1);
+            }
                 break;
-            case R.id.app_backup:   backupRoutine();
+            case R.id.app_backup:
+            {
+                if(drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                backupRoutine();
+            }
                 break;
             default:
                 return super.onOptionsItemSelected(item);

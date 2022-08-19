@@ -45,10 +45,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivityTutorial3"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".MainActivityTutorial1"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />

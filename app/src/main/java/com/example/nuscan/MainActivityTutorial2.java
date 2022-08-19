@@ -42,14 +42,14 @@ public class MainActivityTutorial2 extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivityTutorial2.this, MainActivityTutorial3.class);
+                Intent intent = new Intent(MainActivityTutorial2.this, Scanned_FilesTutorial1.class);
                 startActivity(intent);
             }
         });
         next_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivityTutorial2.this, MainActivityTutorial3.class);
+                Intent intent = new Intent(MainActivityTutorial2.this, Scanned_FilesTutorial1.class);
                 startActivity(intent);
             }
         });
