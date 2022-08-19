@@ -1,5 +1,9 @@
 package com.example.nuscan;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -16,11 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,15 +36,33 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
+import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.internal.GoogleSignInOptionsExtensionParcelable;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.itextpdf.text.Document;
@@ -45,6 +70,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -84,6 +110,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private GoogleSignInOptions googleSignInOptions;
+    private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private int isLoggedIn = 0;
+    private SharedPreferences loginSharedPreferences;
+    private ArrayList<String> user_details;
+    private ProgressDialog progressDialog;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadLoginData();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +142,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView =findViewById(R.id.main_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        progressDialog = new ProgressDialog(this);
 
         if(permission())
         {
@@ -133,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             date = simpleDateFormat.format(new Date());
             selected_items = new ArrayList<>();
 
+            loadLoginData();
             loadData();
             buildrecyclerview();
             loadImages();
@@ -152,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onRefresh() {
                     loadData();
+                    loadImages();
                     buildrecyclerview();
                     mAdapter.notifyDataSetChanged();
                     swipeRefreshLayout.setRefreshing(false);
@@ -340,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String json = gson.toJson(eList1);
         editor.putString("doc_list",json);
         editor.apply();
+
     }
 
     private void loadData() {
@@ -352,6 +400,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             mElist = new ArrayList<Card_item>();
         }
+    }
+
+    private void saveLoginData(int login, ArrayList<String> User_Details)
+    {
+        loginSharedPreferences = getSharedPreferences("login_data",MODE_PRIVATE);
+        SharedPreferences.Editor editor = loginSharedPreferences.edit();
+        Gson gson1,gson2;
+        gson1 = new Gson();
+        gson2 = new Gson();
+        String json1 = gson1.toJson(login);
+        String json2 = gson2.toJson(User_Details);
+        editor.putString("login_bool",json1);
+        editor.putString("user_data",json2);
+        editor.apply();
+    }
+
+    private void loadLoginData()
+    {
+        loginSharedPreferences = getSharedPreferences("login_data",MODE_PRIVATE);
+        Gson gson1,gson2;
+        gson1 = new Gson();
+        gson2 = new Gson();
+        String json1 = loginSharedPreferences.getString("login_bool",null);
+        String json2 = loginSharedPreferences.getString("user_data",null);
+        Type type1,type2;
+        type1 = new TypeToken<Integer>(){}.getType();
+        type2 = new TypeToken<ArrayList<String>>(){}.getType();
+        if(gson1.fromJson(json1,type1)!=null)
+            isLoggedIn = gson1.fromJson(json1,type1);
+        else
+            isLoggedIn=0;
+        if(isLoggedIn==1)
+        {
+            user_details = gson2.fromJson(json2,type2);
+        }
+        else
+            user_details = new ArrayList<>();
     }
 
     private void loadImages()
@@ -949,6 +1034,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        loadLoginData();
         if(drawerLayout.isDrawerOpen(GravityCompat.START))
         {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -961,6 +1047,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        loadLoginData();
         switch (item.getItemId()) {
             case R.id.app_info:
             {
@@ -985,10 +1072,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 backupRoutine();
             }
                 break;
+            case R.id.app_log:
+            {
+                if(isLoggedIn==1)
+                {
+                    SignOutRequest();
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                }
+                else
+                {
+                    SignInRequest();
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                }
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void SignInRequest()
+    {
+        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        resultLauncher.launch(signInIntent);
+    }
+
+    private void SignOutRequest()
+    {
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        firebaseAuth.signOut();
+        if(googleSignInClient!=null)
+        googleSignInClient.signOut();
+        firebaseUser = null;
+        isLoggedIn=0;
+        user_details=new ArrayList<>();
+        saveLoginData(isLoggedIn,null);
+        firebaseUser = null;
+//        firebaseUser.delete();
     }
 
     private void backupRoutine()
@@ -1119,6 +1245,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result.getData()!=null)
+            {
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                try
+                {
+                    progressDialog.setTitle("Sign in");
+                    progressDialog.setMessage("Logging in");
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.show();
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    firebaseAuthWithGoogle(account);
+                }
+                catch (ApiException e)
+                {
+                    Toast.makeText(MainActivity.this, e.getMessage().toString().trim(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    });
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account)
+    {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                progressDialog.dismiss();
+                if(task.isSuccessful())
+                {
+                    firebaseUser = firebaseAuth.getCurrentUser();
+                    isLoggedIn=1;
+                    ArrayList<String> user_data = new ArrayList<>();
+                    user_data.add(firebaseUser.getDisplayName());
+                    user_data.add(firebaseUser.getEmail());
+                    user_data.add(firebaseUser.getPhoneNumber());
+                    user_data.add(firebaseUser.getPhotoUrl().toString().trim());
+                    user_details = user_data;
+                    saveLoginData(isLoggedIn,user_details);
+                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Failed to sign in with google auth...", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 }
