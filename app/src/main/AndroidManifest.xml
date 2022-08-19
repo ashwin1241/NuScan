@@ -33,33 +33,33 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".PreviewTutorial1"
+            android:name="com.example.nuscan.PreviewTutorial1"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Scanned_FilesTutorial1"
+            android:name="com.example.nuscan.Scanned_FilesTutorial1"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivityTutorial2"
+            android:name="com.example.nuscan.MainActivityTutorial2"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivityTutorial1"
+            android:name="com.example.nuscan.MainActivityTutorial1"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".App_Feedback"
+            android:name="com.example.nuscan.App_Feedback"
             android:configChanges="orientation"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.example.nuscan.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".App_About"
+            android:name="com.example.nuscan.App_About"
             android:configChanges="orientation"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.example.nuscan.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Launch_splashscreen"
+            android:name="com.example.nuscan.Launch_splashscreen"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NuScan_new"
@@ -71,13 +71,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Preview"
+            android:name="com.example.nuscan.Preview"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Scanned_Files"
+            android:name="com.example.nuscan.Scanned_Files"
             android:configChanges="orientation"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.example.nuscan.MainActivity"
             android:screenOrientation="portrait"
             android:exported="false">
             <intent-filter>
@@ -87,7 +87,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.nuscan.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NuScan.NoActionBar"/>

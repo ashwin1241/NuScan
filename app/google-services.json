@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "581576992023",
-    "project_id": "nuscanner-fd0aa",
-    "storage_bucket": "nuscanner-fd0aa.appspot.com"
+    "project_number": "793044851352",
+    "project_id": "nuscan-1660905612866",
+    "storage_bucket": "nuscan-1660905612866.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:581576992023:android:8c46dd36134578b4bac352",
+        "mobilesdk_app_id": "1:793044851352:android:93e533d095aaac97d74eed",
         "android_client_info": {
-          "package_name": "com.example.nuscanner"
+          "package_name": "com.example.nuscan"
         }
       },
       "oauth_client": [
         {
-          "client_id": "581576992023-1ppevuamo059cfttf88eup88celbm4t8.apps.googleusercontent.com",
+          "client_id": "793044851352-1jfmt8iadej2sf52rt9pvdl8jba922ti.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nuscan",
+            "certificate_hash": "97c159e961d5bba4a26711b905722e98badc9ed1"
+          }
+        },
+        {
+          "client_id": "793044851352-sdmk4g63qg8j9bc3uj9128rlci1m23ja.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyARwUAe5C-9VJhillF4mytSJ2F1Mykf6wY"
+          "current_key": "AIzaSyB2tepAd6UFFKj4fYvzeu83QVXnRGNs8uo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "581576992023-1ppevuamo059cfttf88eup88celbm4t8.apps.googleusercontent.com",
+              "client_id": "793044851352-sdmk4g63qg8j9bc3uj9128rlci1m23ja.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

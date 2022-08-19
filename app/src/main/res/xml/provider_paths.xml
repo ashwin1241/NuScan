@@ -2,8 +2,8 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
 <external-path
     name="Images"
-    path="Android/data/com.example.nuscanner/files/Pictures"/>
+    path="Android/data/com.example.nuscan/files/Pictures"/>
     <external-path
         name="Pdfs"
-        path="Android/data/com.example.nuscanner/files/Documents"/>
+        path="Android/data/com.example.nuscan/files/Documents"/>
 </paths>
