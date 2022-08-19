@@ -91,7 +91,8 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NuScan.NoActionBar"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

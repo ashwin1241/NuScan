@@ -6,10 +6,12 @@
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/drawable/custom_button_shape.xml" value="0.22631578947368422" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/drawable/ic_arrow_down.xml" value="0.22631578947368422" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/drawable/ic_arrow_up.xml" value="0.22631578947368422" />
-        <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/activity_main.xml" value="0.21271929824561403" />
+        <entry key="..\:/Android_Projects/NuScan/app/src/main/res/drawable/ic_baseline_logout_24.xml" value="0.242" />
+        <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/activity_open_with_option.xml" value="0.2526041666666667" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/activity_scanned_files.xml" value="0.2526041666666667" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/edit_dialog.xml" value="0.264" />
+        <entry key="..\:/Android_Projects/NuScan/app/src/main/res/layout/nav_drawer_header.xml" value="0.264" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/menu/main_menu.xml" value="0.264" />
         <entry key="..\:/Android_Projects/NuScan/app/src/main/res/menu/new_menu.xml" value="0.21271929824561403" />
       </map>
