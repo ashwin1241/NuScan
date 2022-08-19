@@ -1112,7 +1112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         firebaseUser = null;
         isLoggedIn=0;
         user_details=new ArrayList<>();
-        saveLoginData(isLoggedIn,null);
+        saveLoginData(isLoggedIn,new ArrayList<>());
         firebaseUser = null;
 //        firebaseUser.delete();
     }
