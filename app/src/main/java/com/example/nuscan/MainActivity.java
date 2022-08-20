@@ -1104,15 +1104,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void SignOutRequest()
     {
+        if(googleSignInClient==null)
+        {
+            googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
+        }
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signOut();
-        if(googleSignInClient!=null)
         googleSignInClient.signOut();
-        firebaseUser = null;
         isLoggedIn=0;
         user_details=new ArrayList<>();
         saveLoginData(isLoggedIn,new ArrayList<>());
-//        firebaseUser.delete();
     }
 
     private void backupRoutine()
