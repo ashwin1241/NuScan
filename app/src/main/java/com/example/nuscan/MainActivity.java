@@ -1105,7 +1105,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void SignOutRequest()
     {
         firebaseAuth = FirebaseAuth.getInstance();
-
         firebaseAuth.signOut();
         if(googleSignInClient!=null)
         googleSignInClient.signOut();
@@ -1113,7 +1112,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         isLoggedIn=0;
         user_details=new ArrayList<>();
         saveLoginData(isLoggedIn,new ArrayList<>());
-        firebaseUser = null;
 //        firebaseUser.delete();
     }
 
