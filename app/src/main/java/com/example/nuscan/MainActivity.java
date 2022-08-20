@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_logout_24);
             menu.findItem(R.id.app_log).setTitle("Sign out");
+            menu.findItem(R.id.app_backup).setVisible(true);
             user_name.setText(user_details.get(0));
             user_email.setText(user_details.get(1));
             user_email.setVisibility(View.VISIBLE);
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_login_24);
             menu.findItem(R.id.app_log).setTitle("Sign in");
+            menu.findItem(R.id.app_backup).setVisible(false);
             user_name.setText("User");
             user_email.setVisibility(View.INVISIBLE);
             profileImage.setImageResource(R.mipmap.ic_launcher);
