@@ -44,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -123,20 +124,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadLoginData();
         Menu menu = navigationView.getMenu();
         View view = navigationView.getHeaderView(0);
-        TextView username = view.findViewById(R.id.app_username);
+        TextView user_name = view.findViewById(R.id.app_user_name);
+        TextView user_email = view.findViewById(R.id.app_user_email);
+        ImageView profileImage = view.findViewById(R.id.app_profile_image);
         if(isLoggedIn==1)
         {
             menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_logout_24);
             menu.findItem(R.id.app_log).setTitle("Sign out");
-            menu.findItem(R.id.app_profile).setVisible(true);
-            username.setText("Welcome\n"+user_details.get(0));
+            user_name.setText(user_details.get(0));
+            user_email.setText(user_details.get(1));
+            user_email.setVisibility(View.VISIBLE);
+            Glide.with(this).load(user_details.get(3)).into(profileImage);
+            view.setPaddingRelative(16,16,16,16);
+            user_name.setPaddingRelative(0,0,0,0);
         }
         else
         {
             menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_login_24);
             menu.findItem(R.id.app_log).setTitle("Sign in");
-            menu.findItem(R.id.app_profile).setVisible(false);
-            username.setText("Welcome\nUser");
+            user_name.setText("User");
+            user_email.setVisibility(View.INVISIBLE);
+            profileImage.setImageResource(R.mipmap.ic_launcher);
+            view.setPaddingRelative(-64,16,16,16);
+            user_name.setPaddingRelative(94,0,0,-10);
         }
     }
 
