@@ -19,14 +19,16 @@
     </group>
     <item android:title="User">
         <menu>
-            <item
-                android:title="Profile"
-                android:icon="@drawable/ic_baseline_person_24"
-                android:id="@+id/app_profile"/>
-            <item
-                android:title="Sign in"
-                android:icon="@drawable/ic_baseline_login_24"
-                android:id="@+id/app_log"/>
+            <group android:checkableBehavior="single">
+                <item
+                    android:title="Profile"
+                    android:icon="@drawable/ic_baseline_person_24"
+                    android:id="@+id/app_profile"/>
+                <item
+                    android:title="Sign in"
+                    android:icon="@drawable/ic_baseline_login_24"
+                    android:id="@+id/app_log"/>
+            </group>
         </menu>
     </item>
 </menu>

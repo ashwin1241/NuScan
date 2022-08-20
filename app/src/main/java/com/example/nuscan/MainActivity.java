@@ -21,13 +21,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,8 +34,8 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -46,18 +44,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
-import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.internal.GoogleSignInOptionsExtensionParcelable;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,7 +64,6 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -120,9 +113,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog progressDialog;
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+        updateNavDrawer();
+    }
+
+    private void updateNavDrawer()
+    {
         loadLoginData();
+        Menu menu = navigationView.getMenu();
+        View view = navigationView.getHeaderView(0);
+        TextView username = view.findViewById(R.id.app_username);
+        if(isLoggedIn==1)
+        {
+            menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_logout_24);
+            menu.findItem(R.id.app_log).setTitle("Sign out");
+            menu.findItem(R.id.app_profile).setVisible(true);
+            username.setText("Welcome\n"+user_details.get(0));
+        }
+        else
+        {
+            menu.findItem(R.id.app_log).setIcon(R.drawable.ic_baseline_login_24);
+            menu.findItem(R.id.app_log).setTitle("Sign in");
+            menu.findItem(R.id.app_profile).setVisible(false);
+            username.setText("Welcome\nUser");
+        }
     }
 
     @Override
@@ -135,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setTitle("NuScan");
 
         buildNavDrawer();
+        loadLoginData();
+        loadData();
+        buildrecyclerview();
+        loadImages();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -170,11 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
             date = simpleDateFormat.format(new Date());
             selected_items = new ArrayList<>();
-
-            loadLoginData();
-            loadData();
-            buildrecyclerview();
-            loadImages();
 
             card_add = findViewById(R.id.card_add);
             card_delete = findViewById(R.id.card_delete);
@@ -1122,11 +1136,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(MainActivity.this, "Sign out successful", Toast.LENGTH_SHORT).show();
+                isLoggedIn=0;
+                user_details=new ArrayList<>();
+                saveLoginData(isLoggedIn,new ArrayList<>());
+                updateNavDrawer();
             }
         });
-        isLoggedIn=0;
-        user_details=new ArrayList<>();
-        saveLoginData(isLoggedIn,new ArrayList<>());
     }
 
     private void backupRoutine()
@@ -1301,6 +1316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     user_details = user_data;
                     saveLoginData(isLoggedIn,user_details);
                     Toast.makeText(MainActivity.this, "Sign in successful", Toast.LENGTH_SHORT).show();
+                    updateNavDrawer();
                 }
                 else
                 {
