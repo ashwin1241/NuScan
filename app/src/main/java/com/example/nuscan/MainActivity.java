@@ -134,14 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("NuScan");
 
-        drawerLayout = findViewById(R.id.drawer_main_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView =findViewById(R.id.main_nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setItemIconTintList(null);
+        buildNavDrawer();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -711,6 +704,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void buildNavDrawer()
+    {
+        drawerLayout = findViewById(R.id.drawer_main_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView =findViewById(R.id.main_nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
+    }
+
     private void shareItem(int position, ArrayList<Card_item> list1)
     {
         String[] options = {"PDF","JPG"};
@@ -1114,7 +1119,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signOut();
-        googleSignInClient.signOut();
+        googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(MainActivity.this, "Sign out successful", Toast.LENGTH_SHORT).show();
+            }
+        });
         isLoggedIn=0;
         user_details=new ArrayList<>();
         saveLoginData(isLoggedIn,new ArrayList<>());
@@ -1291,7 +1301,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     user_data.add(firebaseUser.getPhotoUrl().toString().trim());
                     user_details = user_data;
                     saveLoginData(isLoggedIn,user_details);
-                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Sign in successful", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
