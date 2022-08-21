@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
@@ -1106,7 +1107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 if(isLoggedIn==1)
                 {
-                    SignOutRequest();
+                    confirmSignOut();
                     drawerLayout.closeDrawer(GravityCompat.START);
                 }
                 else
@@ -1142,18 +1143,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .build();
             googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
         }
+        progressDialog.setTitle("Sign out");
+        progressDialog.setIcon(R.drawable.ic__google_icon);
+        progressDialog.setMessage("Logging out");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signOut();
         googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(MainActivity.this, "Sign out successful", Toast.LENGTH_SHORT).show();
-                isLoggedIn=0;
-                user_details=new ArrayList<>();
-                saveLoginData(isLoggedIn,new ArrayList<>());
-                updateNavDrawer();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Sign out successful", Toast.LENGTH_SHORT).show();
+                        isLoggedIn=0;
+                        user_details=new ArrayList<>();
+                        saveLoginData(isLoggedIn,new ArrayList<>());
+                        updateNavDrawer();
+                    }
+                },2000);
             }
         });
+    }
+
+    private void confirmSignOut()
+    {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Sign out")
+        .setIcon(R.drawable.ic__google_icon)
+        .setMessage("Are you sure you want to sign out?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+             @Override
+             public void onClick(DialogInterface dialogInterface, int i) {
+                     SignOutRequest();
+             }
+        })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+        dialog.create().show();
     }
 
     private void backupRoutine()
@@ -1295,6 +1329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 try
                 {
                     progressDialog.setTitle("Sign in");
+                    progressDialog.setIcon(R.drawable.ic__google_icon);
                     progressDialog.setMessage("Logging in");
                     progressDialog.setCanceledOnTouchOutside(false);
                     progressDialog.show();
