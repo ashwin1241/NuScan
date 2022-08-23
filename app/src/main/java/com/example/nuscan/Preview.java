@@ -6,13 +6,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,8 +26,6 @@ import android.widget.Toast;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
@@ -39,7 +38,6 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class Preview extends AppCompatActivity {
@@ -56,6 +54,11 @@ public class Preview extends AppCompatActivity {
     private ArrayList<Card_sub_item> mElist;
     private int edit_status=0;
     private String page_title;
+    private ProgressDialog progressDialog;
+    private ItemDataBase itemDataBase;
+    private SubItemDataBase subItemDataBase;
+    private ItemQueriesDao itemQueriesDao;
+    private SubItemQueriesDao subItemQueriesDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,8 +249,9 @@ public class Preview extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        subItemQueriesDao.deleteSubItem(mElist.get(position));
                         mElist.remove(position);
-                        saveData(mElist);
+                        //saveData(mElist);
                         Toast.makeText(Preview.this, "File deleted", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Preview.this, Scanned_Files.class);
                         intent.putExtra("page_title",page_title);
@@ -265,28 +269,26 @@ public class Preview extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void saveData(ArrayList<Card_sub_item> eList2)
-    {
-        card_id = getIntent().getLongExtra("card_id",0);
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(eList2);
-        editor.putString("sub_doc_list"+card_id,json);
-        editor.apply();
-    }
-
     private void loadData()
     {
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("sub_doc_list"+card_id,null);
-        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-        mElist = gson.fromJson(json,type);
+        instantiateDataBase();
+        mElist = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
         if(mElist==null)
-        {
-            mElist = new ArrayList<Card_sub_item>();
-        }
+            mElist = new ArrayList<>();
+    }
+
+    private void instantiateDataBase()
+    {
+        progressDialog = new ProgressDialog(Preview.this);
+        progressDialog.setMessage("Fetching your data");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        itemDataBase = ItemDataBase.getInstance(Preview.this);
+        subItemDataBase = SubItemDataBase.getInstance(Preview.this);
+        progressDialog.setMessage("Activating queries");
+        itemQueriesDao = itemDataBase.itemQueries();
+        subItemQueriesDao = subItemDataBase.subItemQueries();
+        progressDialog.dismiss();
     }
 
     @Override
@@ -312,3 +314,4 @@ public class Preview extends AppCompatActivity {
     }
 
 }
+

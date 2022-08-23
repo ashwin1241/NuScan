@@ -1,19 +1,28 @@
 package com.example.nuscan;
 
-public class Card_item {
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import java.io.Serializable;
+
+@Entity
+public class Card_item implements Serializable {
 
     private String title;
     private String date;
     private boolean isSelected;
+    @PrimaryKey(autoGenerate = false)
     private long id;
     private String image;
     private String pdfname;
 
-    public Card_item(String mtitle, String mdate, boolean misSelected)
-    {
-        this.title = mtitle;
-        this.date = mdate;
-        this.isSelected = misSelected;
+    public Card_item(String title, String date, boolean isSelected, long id, String image, String pdfname) {
+        this.title = title;
+        this.date = date;
+        this.isSelected = isSelected;
+        this.id = id;
+        this.image = image;
+        this.pdfname = pdfname;
     }
 
     public String getTitle() {

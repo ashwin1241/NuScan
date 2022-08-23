@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,12 +69,8 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Type;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -112,11 +109,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int isLoggedIn = 0;
     private SharedPreferences loginSharedPreferences;
     private ArrayList<String> user_details;
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog,progressDialog12;
+    private ItemDataBase itemDataBase;
+    private SubItemDataBase subItemDataBase;
+    private ItemQueriesDao itemQueriesDao;
+    private SubItemQueriesDao subItemQueriesDao;
 
     @Override
     protected void onResume() {
         super.onResume();
+        loadData();
         updateNavDrawer();
     }
 
@@ -162,9 +164,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("NuScan");
 
-        buildNavDrawer();
         loadLoginData();
         loadData();
+        buildNavDrawer();
         buildrecyclerview();
         loadImages();
 
@@ -217,8 +219,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
+                    loadLoginData();
                     loadData();
                     loadImages();
+                    updateNavDrawer();
                     buildrecyclerview();
                     mAdapter.notifyDataSetChanged();
                     swipeRefreshLayout.setRefreshing(false);
@@ -399,27 +403,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void saveData(ArrayList<Card_item> eList1)
+    private void loadData()
     {
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(eList1);
-        editor.putString("doc_list",json);
-        editor.apply();
-
+        instantiateDataBase();
+        mElist = (ArrayList<Card_item>) itemQueriesDao.getAllItems();
+        if(mElist==null)
+            mElist = new ArrayList<>();
     }
 
-    private void loadData() {
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("doc_list",null);
-        Type type = new TypeToken<ArrayList<Card_item>>(){}.getType();
-        mElist = gson.fromJson(json,type);
-        if(mElist==null)
-        {
-            mElist = new ArrayList<Card_item>();
-        }
+    private synchronized void instantiateDataBase()
+    {
+        progressDialog12 = new ProgressDialog(MainActivity.this);
+        progressDialog12.setMessage("Fetching your data");
+        progressDialog12.setCanceledOnTouchOutside(false);
+        progressDialog12.show();
+        itemDataBase = ItemDataBase.getInstance(MainActivity.this);
+        subItemDataBase = SubItemDataBase.getInstance(MainActivity.this);
+        progressDialog12.setMessage("Activating queries");
+        itemQueriesDao = itemDataBase.itemQueries();
+        subItemQueriesDao = subItemDataBase.subItemQueries();
+        progressDialog12.dismiss();
     }
 
     private void saveLoginData(int login, ArrayList<String> User_Details)
@@ -466,11 +469,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for(Card_item item : mElist)
         {
             card_id = item.getId();
-            SharedPreferences sp_sub = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-            Gson gs_sub = new Gson();
-            String js_sub = sp_sub.getString("sub_doc_list"+card_id,null);
-            Type type_sub = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-            carrier = gs_sub.fromJson(js_sub,type_sub);
+            carrier = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
             if(carrier!=null&&carrier.size()>0)
             {
                 item.setImage(carrier.get(0).getImage());
@@ -481,7 +480,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         mAdapter.notifyDataSetChanged();
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     String day;
@@ -506,19 +507,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case Calendar.SUNDAY: day = "Sun";
                 break;
         }
-        mElist.add(position, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
-        mElist.get(position).setId(System.currentTimeMillis());
         String pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
-        mElist.get(position).setPdfname(pname);
+        Card_item item = new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,System.currentTimeMillis(),null,pname);
+        mElist.add(position, item);
         mAdapter.notifyItemInserted(position);
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.insertItem(item);
     }
 
     private void remove_item(int position)
     {
+        itemQueriesDao.deleteItem(mElist.get(position));
+        subItemQueriesDao.deleteAllSpecificSubItems(mElist.get(position).getId());
         mElist.remove(position);
         mAdapter.notifyItemRemoved(position);
-        saveData(mElist);
+//        saveData(mElist);
     }
 
     private void sortItems()
@@ -554,7 +557,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     private void sortZA()
@@ -566,7 +571,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     private void sortdateasc()
@@ -578,7 +585,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     private void sortdatedesc()
@@ -590,7 +599,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         mAdapter.notifyDataSetChanged();
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     private void search()
@@ -768,11 +779,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try
         {
             long card_id = list1.get(position).getId();
-            SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-            Gson gs = new Gson();
-            String js = sp.getString("sub_doc_list"+card_id,null);
-            Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-            subshare_list = gs.fromJson(js,type);
+            subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
             if(subshare_list==null)
             {
                 subshare_list = new ArrayList<Card_sub_item>();
@@ -827,12 +834,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try
         {
             long card_id = list1.get(position).getId();
-            SharedPreferences sp = getSharedPreferences("id_" + card_id, MODE_PRIVATE);
-            Gson gs = new Gson();
-            String js = sp.getString("sub_doc_list" + card_id, null);
-            Type type = new TypeToken<ArrayList<Card_sub_item>>() {
-            }.getType();
-            subshare_list = gs.fromJson(js, type);
+            subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
             if (subshare_list == null) {
                 subshare_list = new ArrayList<Card_sub_item>();
             }
@@ -894,11 +896,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Integer integer : selected_items)
             {
                 long card_id = mElist.get((int) integer).getId();
-                SharedPreferences sp = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-                Gson gs = new Gson();
-                String js = sp.getString("sub_doc_list"+card_id,null);
-                Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-                subshare_list = gs.fromJson(js,type);
+                subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
                 if(subshare_list==null)
                 {
                     subshare_list = new ArrayList<Card_sub_item>();
@@ -948,7 +946,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         selection_cancel.setVisibility(View.INVISIBLE);
         card_delete.setVisibility(View.INVISIBLE);
         card_multiple_share.setVisibility(View.INVISIBLE);
-        saveData(mElist);
+//        saveData(mElist);
+        itemQueriesDao.deleteAllItems();
+        itemQueriesDao.insertAllItems(mElist);
     }
 
     private void share_bulk_JPG()
@@ -959,12 +959,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Integer integer : selected_items)
             {
                 long card_id = mElist.get((int) integer).getId();
-                SharedPreferences sp = getSharedPreferences("id_" + card_id, MODE_PRIVATE);
-                Gson gs = new Gson();
-                String js = sp.getString("sub_doc_list" + card_id, null);
-                Type type = new TypeToken<ArrayList<Card_sub_item>>() {
-                }.getType();
-                subshare_list = gs.fromJson(js, type);
+                subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
                 if (subshare_list == null) {
                     subshare_list = new ArrayList<Card_sub_item>();
                 }
@@ -993,7 +988,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selection_cancel.setVisibility(View.INVISIBLE);
             card_delete.setVisibility(View.INVISIBLE);
             card_multiple_share.setVisibility(View.INVISIBLE);
-            saveData(mElist);
+//            saveData(mElist);
+            itemQueriesDao.deleteAllItems();
+            itemQueriesDao.insertAllItems(mElist);
         }
         catch (Exception e)
         {
@@ -1024,7 +1021,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 selection_cancel.setVisibility(View.INVISIBLE);
                 card_delete.setVisibility(View.INVISIBLE);
                 card_multiple_share.setVisibility(View.INVISIBLE);
-                saveData(mElist);
+//                saveData(mElist);
+                itemQueriesDao.deleteAllItems();
+                itemQueriesDao.insertAllItems(mElist);
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -1051,7 +1050,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     mElist.get(position).setTitle(asdf.getText().toString().trim());
                     mAdapter.notifyDataSetChanged();
-                    saveData(mElist);
+//                    saveData(mElist);
+                    itemQueriesDao.updateItem(mElist.get(position));
                 }
             }
         })
@@ -1200,124 +1200,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int which) {
                 switch (which)
                 {
-                    case 0: createLocalBackup();
+                    case 0:
                         break;
-                    case 1: loadFromLocalBackup();
+                    case 1:
                         break;
                 }
             }
         })
         .create().show();
-    }
-
-    private void createLocalBackup()
-    {
-        String folderPath;
-        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
-        if(!file.exists())
-        {
-            file.mkdirs();
-        }
-        folderPath = file.getAbsolutePath();
-        if(file.exists())
-        {
-            Toast.makeText(MainActivity.this, "Backup folder created successfully", Toast.LENGTH_SHORT).show();
-            generateBackup(folderPath);
-        }
-        else
-        {
-            Toast.makeText(MainActivity.this, "Could not create Backup Folder", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void loadFromLocalBackup()
-    {
-        String folderPath;
-        File file = new File(Environment.getExternalStorageDirectory(),"NuScan Backup");
-        if(!file.exists())
-        {
-            Toast.makeText(MainActivity.this, "No Backups were generated", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            folderPath = file.getAbsolutePath();
-
-        }
-    }
-
-    private void generateBackup(String path)
-    {
-        try
-        {
-            File file = new File(path + "/Backup " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + " " + new SimpleDateFormat("HH:mm").format(new Date()) + ".txt");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            PrintWriter printWriter = new PrintWriter(fileOutputStream);
-            File imgbackup = new File(path + "/Image Backup");
-            if (!imgbackup.exists())
-                imgbackup.mkdirs();
-            ArrayList<Card_sub_item> tempList12;
-            for (Card_item item : mElist) {
-                printWriter.println("ItemStart:");
-                printWriter.flush();
-                printWriter.println(item.getTitle());
-                printWriter.flush();
-                printWriter.println(item.getDate());
-                printWriter.flush();
-                printWriter.println(item.isSelected());
-                printWriter.flush();
-                printWriter.println(item.getId());
-                printWriter.flush();
-                printWriter.println(item.getImage());
-                printWriter.flush();
-                printWriter.println(item.getPdfname());
-                printWriter.flush();
-                printWriter.println("SubItemsStart:");
-                long id = item.getId();
-                SharedPreferences sp_sub = getSharedPreferences("id_" + id, MODE_PRIVATE);
-                Gson gs_sub = new Gson();
-                String js_sub = sp_sub.getString("sub_doc_list" + id, null);
-                Type type_sub = new TypeToken<ArrayList<Card_sub_item>>() {
-                }.getType();
-                tempList12 = gs_sub.fromJson(js_sub, type_sub);
-                if (tempList12 != null && tempList12.size() > 0) {
-                    for(Card_sub_item sub_item : tempList12)
-                    {
-                        FileChannel source = new FileInputStream(sub_item.getImage()).getChannel();
-                        FileChannel destination = new FileOutputStream(new File(imgbackup.getAbsolutePath()+"/"+sub_item.getImageName())).getChannel();
-                        destination.transferFrom(source,0,source.size());
-                        if(source!=null)
-                            source.close();
-                        if(destination!=null)
-                            destination.close();
-                        printWriter.println("SubItemStart:");
-                        printWriter.flush();
-                        printWriter.println(sub_item.getTitle());
-                        printWriter.flush();
-                        printWriter.println(sub_item.getImage());
-                        printWriter.flush();
-                        printWriter.println(sub_item.getPdf());
-                        printWriter.flush();
-                        printWriter.println(sub_item.getImageName());
-                        printWriter.flush();
-                        printWriter.println(sub_item.getPdfname());
-                        printWriter.flush();
-                    }
-                }
-                printWriter.println("ItemEnd");
-                printWriter.flush();
-            }
-            printWriter.flush();
-            printWriter.close();
-            fileOutputStream.flush();
-            fileOutputStream.close();
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {

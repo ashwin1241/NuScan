@@ -1,5 +1,24 @@
 package com.example.nuscan;
 
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -10,31 +29,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.ClipData;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,6 +57,11 @@ public class Scanned_Files extends AppCompatActivity {
     private ArrayList<Card_item> mElist1;
     private String day;
     private String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    private ProgressDialog progressDialog;
+    private ItemDataBase itemDataBase;
+    private SubItemDataBase subItemDataBase;
+    private ItemQueriesDao itemQueriesDao;
+    private SubItemQueriesDao subItemQueriesDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class Scanned_Files extends AppCompatActivity {
         {
             getSupportActionBar().setTitle(page_title);
         }
+        card_id = getIntent().getLongExtra("card_id",0);
 
         loadData();
         loadDataMain();
@@ -125,7 +128,9 @@ public class Scanned_Files extends AppCompatActivity {
                 }
                 //Collections.swap(mElist,fromposition,i);
                 recyclerView.getAdapter().notifyItemMoved(fromposition,toposition);
-                saveData(mElist);
+//                saveData(mElist);
+                subItemQueriesDao.deleteAllSpecificSubItems(card_id);
+                subItemQueriesDao.insertAllSubItems(mElist);
                 return false;
             }
 
@@ -137,27 +142,12 @@ public class Scanned_Files extends AppCompatActivity {
         touchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private void saveDataMain(ArrayList<Card_item> eList1)
-    {
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(eList1);
-        editor.putString("doc_list",json);
-        editor.apply();
-    }
-
     private void loadDataMain()
     {
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedpreferences_sp",MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("doc_list",null);
-        Type type = new TypeToken<ArrayList<Card_item>>(){}.getType();
-        mElist1 = gson.fromJson(json,type);
+        instantiateDataBase();
+        mElist1 = (ArrayList<Card_item>) itemQueriesDao.getAllItems();
         if(mElist1==null)
-        {
-            mElist1 = new ArrayList<Card_item>();
-        }
+            mElist1 = new ArrayList<>();
     }
 
     private void checkIntent()
@@ -167,39 +157,26 @@ public class Scanned_Files extends AppCompatActivity {
         onActivityResult(155,RESULT_OK,getIntent());
     }
 
-    private void saveData1(ArrayList<Card_sub_item> eList2, long card_id1)
-    {
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id1, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(eList2);
-        editor.putString("sub_doc_list"+card_id1,json);
-        editor.apply();
-    }
-
-    private void saveData(ArrayList<Card_sub_item> eList2)
-    {
-        card_id = getIntent().getLongExtra("card_id",0);
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(eList2);
-        editor.putString("sub_doc_list"+card_id,json);
-        editor.apply();
-    }
-
     private void loadData()
     {
-        card_id = getIntent().getLongExtra("card_id",0);
-        SharedPreferences sharedPreferences = getSharedPreferences("id_"+card_id, MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("sub_doc_list"+card_id,null);
-        Type type = new TypeToken<ArrayList<Card_sub_item>>(){}.getType();
-        mElist = gson.fromJson(json,type);
+        instantiateDataBase();
+        mElist = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
         if(mElist==null)
-        {
-            mElist = new ArrayList<Card_sub_item>();
-        }
+            mElist = new ArrayList<>();
+    }
+
+    private void instantiateDataBase()
+    {
+        progressDialog = new ProgressDialog(Scanned_Files.this);
+        progressDialog.setMessage("Fetching your data");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        itemDataBase = ItemDataBase.getInstance(Scanned_Files.this);
+        subItemDataBase = SubItemDataBase.getInstance(Scanned_Files.this);
+        progressDialog.setMessage("Activating queries");
+        itemQueriesDao = itemDataBase.itemQueries();
+        subItemQueriesDao = subItemDataBase.subItemQueries();
+        progressDialog.dismiss();
     }
 
     private void insert_gallery_item(int position)
@@ -245,7 +222,7 @@ public class Scanned_Files extends AppCompatActivity {
             public void OnItemClicked(int position) {
                 Intent intent = new Intent(Scanned_Files.this,Preview.class);
                 intent.putExtra("previmg",Uri.parse(mElist.get(position).getImage()));
-                intent.putExtra("name",mElist.get(position).getImageName());
+                intent.putExtra("name",mElist.get(position).getImgname());
                 intent.putExtra("title","NuScan scanned file "+mElist.get(position).getTitle());
                 intent.putExtra("pdfname",mElist.get(position).getPdfname());
                 intent.putExtra("position",position);
@@ -278,7 +255,8 @@ public class Scanned_Files extends AppCompatActivity {
                 {
                     mElist.get(position).setTitle(asdf.getText().toString().trim());
                     mAdapter.notifyDataSetChanged();
-                    saveData(mElist);
+//                    saveData(mElist);
+                    subItemQueriesDao.updateSubItem(mElist.get(position));
                 }
             }
         })
@@ -324,12 +302,12 @@ public class Scanned_Files extends AppCompatActivity {
                     if(imguri != null)
                     {
                         String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                        mElist.add(temp_position,new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),null,null,image_name));
+                        Card_sub_item item = new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),imguri.toString(), card_id, image_name,pname);
+                        mElist.add(temp_position,item);
                         mAdapter.notifyItemInserted(temp_position);
-                        mElist.get(temp_position).setImage(imguri.toString());
-                        mElist.get(temp_position).setPdfname(pname);
                         Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                        saveData1(mElist,card_id);
+//                        saveData1(mElist,card_id);
+                        subItemQueriesDao.insertSubItem(item);
                         mAdapter.notifyDataSetChanged();
                     }
                     else
@@ -364,12 +342,12 @@ public class Scanned_Files extends AppCompatActivity {
                 if(imguri != null)
                 {
                     String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                    mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
+                    Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,imguri.toString(), card_id, image_name,pname);
+                    mElist.add(temp_position,item);
                     mAdapter.notifyItemInserted(temp_position);
-                    mElist.get(temp_position).setImage(imguri.toString());
-                    mElist.get(temp_position).setPdfname(pname);
                     Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                    saveData1(mElist,card_id);
+//                    saveData1(mElist,card_id);
+                    subItemQueriesDao.insertSubItem(item);
                     mAdapter.notifyDataSetChanged();
                 }
                 else
@@ -398,11 +376,11 @@ public class Scanned_Files extends AppCompatActivity {
                 case Calendar.SUNDAY: day = "Sun";
                     break;
             }
-            mElist1.add(0, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false));
-            mElist1.get(0).setId(System.currentTimeMillis());
             String pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
-            mElist1.get(0).setPdfname(pname);
-            saveDataMain(mElist1);
+            Card_item item1 = new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,System.currentTimeMillis(),null,pname);
+            mElist1.add(0, item1);
+            //saveDataMain(mElist1);
+            itemQueriesDao.insertItem(item1);
             getSupportActionBar().setTitle("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()));
             getSupportActionBar().setHomeButtonEnabled(true);
             ClipData clipData = data.getClipData();
@@ -434,12 +412,12 @@ public class Scanned_Files extends AppCompatActivity {
                     if(imguri != null)
                     {
                         String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
-                        mElist.add(0,new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,null,null,image_name));
+                        Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,imguri.toString(), card_id, image_name,pname12);
+                        mElist.add(0,item);
                         mAdapter.notifyItemInserted(temp_position);
-                        mElist.get(0).setImage(imguri.toString());
-                        mElist.get(0).setPdfname(pname12);
                         Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                        saveData1(mElist,mElist1.get(0).getId());
+                        //saveData1(mElist,mElist1.get(0).getId());
+                        subItemQueriesDao.insertSubItem(item);
                         mAdapter.notifyDataSetChanged();
                     }
                     else
@@ -474,12 +452,12 @@ public class Scanned_Files extends AppCompatActivity {
                 if(imguri != null)
                 {
                     String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
-                    mElist.add(0,new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",null,null,image_name));
+                    Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",imguri.toString(), card_id, image_name,pname12);
+                    mElist.add(0,item);
                     mAdapter.notifyItemInserted(temp_position);
-                    mElist.get(0).setImage(imguri.toString());
-                    mElist.get(0).setPdfname(pname12);
                     Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                    saveData1(mElist,mElist1.get(0).getId());
+                    //saveData1(mElist,mElist1.get(0).getId());
+                    subItemQueriesDao.insertSubItem(item);
                     mAdapter.notifyDataSetChanged();
                 }
                 else
@@ -500,12 +478,12 @@ public class Scanned_Files extends AppCompatActivity {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                mElist.add(temp_position,new Card_sub_item(page_title+"_"+temp_position,null,null,image_name));
+                Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,camuri.toString(), card_id, image_name,pname);
+                mElist.add(temp_position,item);
                 mAdapter.notifyItemInserted(temp_position);
-                mElist.get(temp_position).setImage(camuri.toString());
-                mElist.get(temp_position).setPdfname(pname);
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
-                saveData(mElist);
+                //saveData(mElist);
+                subItemQueriesDao.insertSubItem(item);
                 mAdapter.notifyDataSetChanged();
             }
             else
