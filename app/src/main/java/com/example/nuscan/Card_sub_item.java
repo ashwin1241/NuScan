@@ -2,7 +2,6 @@ package com.example.nuscan;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -14,16 +13,17 @@ private String title;
 private String image;
 private long parent_id;
 private String imgname;
-@PrimaryKey(autoGenerate = false)
-@NonNull
 private String pdfname;
+@PrimaryKey(autoGenerate = false)
+private long id;
 
-    public Card_sub_item(String title, String image, long parent_id, String imgname,@NonNull String pdfname) {
+    public Card_sub_item(String title, String image, long parent_id, String imgname, @NonNull String pdfname, long id) {
         this.title = title;
         this.image = image;
         this.parent_id = parent_id;
         this.imgname = imgname;
         this.pdfname = pdfname;
+        this.id = id;
     }
 
     public String getTitle() {
@@ -64,5 +64,13 @@ private String pdfname;
 
     public void setParent_id(long parent_id) {
         this.parent_id = parent_id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

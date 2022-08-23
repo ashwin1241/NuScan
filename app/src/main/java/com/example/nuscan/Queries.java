@@ -29,7 +29,7 @@ public interface Queries {
     void updateItem(Card_item item);
 
     @NonNull
-    @Query("SELECT * FROM Card_item")
+    @Query("SELECT * FROM Card_item ORDER BY id ASC")
     public List<Card_item> getAllItems();
 
     @Query("DELETE FROM Card_item")
@@ -50,7 +50,7 @@ public interface Queries {
     void updateSubItem(Card_sub_item item);
 
     @NonNull
-    @Query("SELECT * FROM Card_sub_item WHERE parent_id = :parentId")
+    @Query("SELECT * FROM Card_sub_item WHERE parent_id = :parentId ORDER BY id ASC")
     public List<Card_sub_item> getAllSubItems(long parentId);
 
     @Query("DELETE FROM Card_sub_item WHERE parent_id = :parentId")

@@ -297,7 +297,7 @@ public class Scanned_Files extends AppCompatActivity {
                     if(imguri != null)
                     {
                         String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                        Card_sub_item item = new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),imguri.toString(), card_id, image_name,pname);
+                        Card_sub_item item = new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),imguri.toString(), card_id, image_name,pname, System.currentTimeMillis());
                         mElist.add(temp_position,item);
                         mAdapter.notifyItemInserted(temp_position);
                         Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
@@ -337,7 +337,7 @@ public class Scanned_Files extends AppCompatActivity {
                 if(imguri != null)
                 {
                     String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                    Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,imguri.toString(), card_id, image_name,pname);
+                    Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,imguri.toString(), card_id, image_name,pname, System.currentTimeMillis());
                     mElist.add(temp_position,item);
                     mAdapter.notifyItemInserted(temp_position);
                     Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
@@ -407,7 +407,7 @@ public class Scanned_Files extends AppCompatActivity {
                     if(imguri != null)
                     {
                         String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
-                        Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,imguri.toString(), card_id, image_name,pname12);
+                        Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,imguri.toString(), card_id, image_name,pname12, System.currentTimeMillis());
                         mElist.add(0,item);
                         mAdapter.notifyItemInserted(temp_position);
                         Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
@@ -447,7 +447,7 @@ public class Scanned_Files extends AppCompatActivity {
                 if(imguri != null)
                 {
                     String pname12 = "NuScan_"+System.currentTimeMillis()+".pdf";
-                    Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",imguri.toString(), card_id, image_name,pname12);
+                    Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",imguri.toString(), card_id, image_name,pname12, System.currentTimeMillis());
                     mElist.add(0,item);
                     mAdapter.notifyItemInserted(temp_position);
                     Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
@@ -473,7 +473,7 @@ public class Scanned_Files extends AppCompatActivity {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 String pname = "NuScan_"+System.currentTimeMillis()+".pdf";
-                Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,camuri.toString(), card_id, image_name,pname);
+                Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,camuri.toString(), card_id, image_name,pname, System.currentTimeMillis());
                 mElist.add(temp_position,item);
                 mAdapter.notifyItemInserted(temp_position);
                 Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
