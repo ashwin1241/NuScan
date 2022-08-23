@@ -12,7 +12,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Dao
-public interface SubItemQueriesDao {
+public interface Queries {
+
+    //Queries for the table Card_item
+
+    @Delete
+    void deleteItem(Card_item item);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertItem(Card_item item);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAllItems(ArrayList<Card_item> items);
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    void updateItem(Card_item item);
+
+    @NonNull
+    @Query("SELECT * FROM Card_item")
+    public List<Card_item> getAllItems();
+
+    @Query("DELETE FROM Card_item")
+    void deleteAllItems();
+
+    //Queries for the table Card_sub_item
 
     @Delete
     void deleteSubItem(Card_sub_item item);
@@ -35,4 +58,5 @@ public interface SubItemQueriesDao {
 
     @Query("DELETE FROM Card_sub_item")
     void deleteAllSubItems();
+
 }

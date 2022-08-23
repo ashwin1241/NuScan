@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -55,10 +54,8 @@ public class Preview extends AppCompatActivity {
     private int edit_status=0;
     private String page_title;
     private ProgressDialog progressDialog;
-    private ItemDataBase itemDataBase;
-    private SubItemDataBase subItemDataBase;
-    private ItemQueriesDao itemQueriesDao;
-    private SubItemQueriesDao subItemQueriesDao;
+    private DataBase dataBase;
+    private Queries queries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,7 +246,7 @@ public class Preview extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        subItemQueriesDao.deleteSubItem(mElist.get(position));
+                        queries.deleteSubItem(mElist.get(position));
                         mElist.remove(position);
                         //saveData(mElist);
                         Toast.makeText(Preview.this, "File deleted", Toast.LENGTH_SHORT).show();
@@ -272,7 +269,7 @@ public class Preview extends AppCompatActivity {
     private void loadData()
     {
         instantiateDataBase();
-        mElist = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+        mElist = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
         if(mElist==null)
             mElist = new ArrayList<>();
     }
@@ -283,11 +280,9 @@ public class Preview extends AppCompatActivity {
         progressDialog.setMessage("Fetching your data");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
-        itemDataBase = ItemDataBase.getInstance(Preview.this);
-        subItemDataBase = SubItemDataBase.getInstance(Preview.this);
+        dataBase = DataBase.getInstance(Preview.this);
         progressDialog.setMessage("Activating queries");
-        itemQueriesDao = itemDataBase.itemQueries();
-        subItemQueriesDao = subItemDataBase.subItemQueries();
+        queries = dataBase.itemQueries();
         progressDialog.dismiss();
     }
 

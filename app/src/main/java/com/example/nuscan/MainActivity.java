@@ -27,7 +27,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -110,10 +109,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences loginSharedPreferences;
     private ArrayList<String> user_details;
     private ProgressDialog progressDialog,progressDialog12;
-    private ItemDataBase itemDataBase;
-    private SubItemDataBase subItemDataBase;
-    private ItemQueriesDao itemQueriesDao;
-    private SubItemQueriesDao subItemQueriesDao;
+    private DataBase dataBase;
+    private Queries queries;
 
     @Override
     protected void onResume() {
@@ -406,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadData()
     {
         instantiateDataBase();
-        mElist = (ArrayList<Card_item>) itemQueriesDao.getAllItems();
+        mElist = (ArrayList<Card_item>) queries.getAllItems();
         if(mElist==null)
             mElist = new ArrayList<>();
     }
@@ -417,11 +414,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         progressDialog12.setMessage("Fetching your data");
         progressDialog12.setCanceledOnTouchOutside(false);
         progressDialog12.show();
-        itemDataBase = ItemDataBase.getInstance(MainActivity.this);
-        subItemDataBase = SubItemDataBase.getInstance(MainActivity.this);
+        dataBase = DataBase.getInstance(MainActivity.this);
         progressDialog12.setMessage("Activating queries");
-        itemQueriesDao = itemDataBase.itemQueries();
-        subItemQueriesDao = subItemDataBase.subItemQueries();
+        queries = dataBase.itemQueries();
         progressDialog12.dismiss();
     }
 
@@ -469,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for(Card_item item : mElist)
         {
             card_id = item.getId();
-            carrier = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+            carrier = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
             if(carrier!=null&&carrier.size()>0)
             {
                 item.setImage(carrier.get(0).getImage());
@@ -481,8 +476,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     String day;
@@ -512,13 +507,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mElist.add(position, item);
         mAdapter.notifyItemInserted(position);
 //        saveData(mElist);
-        itemQueriesDao.insertItem(item);
+        queries.insertItem(item);
     }
 
     private void remove_item(int position)
     {
-        itemQueriesDao.deleteItem(mElist.get(position));
-        subItemQueriesDao.deleteAllSpecificSubItems(mElist.get(position).getId());
+        queries.deleteItem(mElist.get(position));
+        queries.deleteAllSpecificSubItems(mElist.get(position).getId());
         mElist.remove(position);
         mAdapter.notifyItemRemoved(position);
 //        saveData(mElist);
@@ -558,8 +553,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     private void sortZA()
@@ -572,8 +567,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     private void sortdateasc()
@@ -586,8 +581,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     private void sortdatedesc()
@@ -600,8 +595,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     private void search()
@@ -779,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try
         {
             long card_id = list1.get(position).getId();
-            subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+            subshare_list = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
             if(subshare_list==null)
             {
                 subshare_list = new ArrayList<Card_sub_item>();
@@ -834,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try
         {
             long card_id = list1.get(position).getId();
-            subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+            subshare_list = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
             if (subshare_list == null) {
                 subshare_list = new ArrayList<Card_sub_item>();
             }
@@ -896,7 +891,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Integer integer : selected_items)
             {
                 long card_id = mElist.get((int) integer).getId();
-                subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+                subshare_list = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
                 if(subshare_list==null)
                 {
                     subshare_list = new ArrayList<Card_sub_item>();
@@ -947,8 +942,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         card_delete.setVisibility(View.INVISIBLE);
         card_multiple_share.setVisibility(View.INVISIBLE);
 //        saveData(mElist);
-        itemQueriesDao.deleteAllItems();
-        itemQueriesDao.insertAllItems(mElist);
+        queries.deleteAllItems();
+        queries.insertAllItems(mElist);
     }
 
     private void share_bulk_JPG()
@@ -959,7 +954,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Integer integer : selected_items)
             {
                 long card_id = mElist.get((int) integer).getId();
-                subshare_list = (ArrayList<Card_sub_item>) subItemQueriesDao.getAllSubItems(card_id);
+                subshare_list = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
                 if (subshare_list == null) {
                     subshare_list = new ArrayList<Card_sub_item>();
                 }
@@ -989,8 +984,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             card_delete.setVisibility(View.INVISIBLE);
             card_multiple_share.setVisibility(View.INVISIBLE);
 //            saveData(mElist);
-            itemQueriesDao.deleteAllItems();
-            itemQueriesDao.insertAllItems(mElist);
+            queries.deleteAllItems();
+            queries.insertAllItems(mElist);
         }
         catch (Exception e)
         {
@@ -1022,8 +1017,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 card_delete.setVisibility(View.INVISIBLE);
                 card_multiple_share.setVisibility(View.INVISIBLE);
 //                saveData(mElist);
-                itemQueriesDao.deleteAllItems();
-                itemQueriesDao.insertAllItems(mElist);
+                queries.deleteAllItems();
+                queries.insertAllItems(mElist);
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -1051,7 +1046,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mElist.get(position).setTitle(asdf.getText().toString().trim());
                     mAdapter.notifyDataSetChanged();
 //                    saveData(mElist);
-                    itemQueriesDao.updateItem(mElist.get(position));
+                    queries.updateItem(mElist.get(position));
                 }
             }
         })
