@@ -162,7 +162,7 @@ public class Scanned_Files extends AppCompatActivity {
             mElist = new ArrayList<>();
     }
 
-    private void instantiateDataBase()
+    private synchronized void instantiateDataBase()
     {
         progressDialog = new ProgressDialog(Scanned_Files.this);
         progressDialog.setMessage("Fetching your data");

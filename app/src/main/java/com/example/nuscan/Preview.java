@@ -274,7 +274,7 @@ public class Preview extends AppCompatActivity {
             mElist = new ArrayList<>();
     }
 
-    private void instantiateDataBase()
+    private synchronized void instantiateDataBase()
     {
         progressDialog = new ProgressDialog(Preview.this);
         progressDialog.setMessage("Fetching your data");
