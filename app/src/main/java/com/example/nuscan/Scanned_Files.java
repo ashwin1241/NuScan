@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -303,14 +305,14 @@ public class Scanned_Files extends AppCompatActivity {
                         Card_sub_item item = new Card_sub_item(page_title+"_"+String.valueOf(temp_position+i),imguri.toString(), card_id, image_name,pname, System.currentTimeMillis(), mElist.size());
                         mElist.add(temp_position,item);
                         mAdapter.notifyItemInserted(temp_position);
-                        Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"File saved",Snackbar.LENGTH_SHORT).show();
 //                        saveData1(mElist,card_id);
                         queries.insertSubItem(item);
                         mAdapter.notifyDataSetChanged();
                     }
                     else
                     {
-                        Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"Image not found",Snackbar.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -343,14 +345,14 @@ public class Scanned_Files extends AppCompatActivity {
                     Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,imguri.toString(), card_id, image_name,pname, System.currentTimeMillis(), mElist.size());
                     mElist.add(temp_position,item);
                     mAdapter.notifyItemInserted(temp_position);
-                    Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"File saved",Snackbar.LENGTH_SHORT).show();
 //                    saveData1(mElist,card_id);
                     queries.insertSubItem(item);
                     mAdapter.notifyDataSetChanged();
                 }
                 else
                 {
-                    Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"Image not found",Snackbar.LENGTH_SHORT).show();
                 }
             }
         }
@@ -413,14 +415,14 @@ public class Scanned_Files extends AppCompatActivity {
                         Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_"+i,imguri.toString(), card_id, image_name,pname12, System.currentTimeMillis(), mElist.size());
                         mElist.add(0,item);
                         mAdapter.notifyItemInserted(temp_position);
-                        Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"File saved",Snackbar.LENGTH_SHORT).show();
                         //saveData1(mElist,mElist1.get(0).getId());
                         queries.insertSubItem(item);
                         mAdapter.notifyDataSetChanged();
                     }
                     else
                     {
-                        Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"Image not found",Snackbar.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -453,14 +455,14 @@ public class Scanned_Files extends AppCompatActivity {
                     Card_sub_item item = new Card_sub_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date())+"_0",imguri.toString(), card_id, image_name,pname12, System.currentTimeMillis(), mElist.size());
                     mElist.add(0,item);
                     mAdapter.notifyItemInserted(temp_position);
-                    Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"File saved",Snackbar.LENGTH_SHORT).show();
                     //saveData1(mElist,mElist1.get(0).getId());
                     queries.insertSubItem(item);
                     mAdapter.notifyDataSetChanged();
                 }
                 else
                 {
-                    Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"Image not found",Snackbar.LENGTH_SHORT).show();
                 }
             }
         }
@@ -479,14 +481,14 @@ public class Scanned_Files extends AppCompatActivity {
                 Card_sub_item item = new Card_sub_item(page_title+"_"+temp_position,camuri.toString(), card_id, image_name,pname, System.currentTimeMillis(), mElist.size());
                 mElist.add(temp_position,item);
                 mAdapter.notifyItemInserted(temp_position);
-                Toast.makeText(Scanned_Files.this, "File saved", Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"File saved",Snackbar.LENGTH_SHORT).show();
                 //saveData(mElist);
                 queries.insertSubItem(item);
                 mAdapter.notifyDataSetChanged();
             }
             else
             {
-                Toast.makeText(this, "Image could not be saved", Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.scanned_files_rel_layout),"Image could not be saved",Snackbar.LENGTH_SHORT).show();
             }
         }
     }

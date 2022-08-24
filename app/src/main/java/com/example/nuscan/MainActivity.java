@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -1169,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Sign out successful", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.main_rel_layout),"Sign out successful",Snackbar.LENGTH_SHORT).show();
                         isLoggedIn=0;
                         user_details=new ArrayList<>();
                         saveLoginData(isLoggedIn,new ArrayList<>());
@@ -1264,12 +1266,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     user_data.add(firebaseUser.getPhotoUrl().toString().trim());
                     user_details = user_data;
                     saveLoginData(isLoggedIn,user_details);
-                    Toast.makeText(MainActivity.this, "Sign in successful", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.main_rel_layout),"Sign in successful",Snackbar.LENGTH_SHORT).show();
                     updateNavDrawer();
                 }
                 else
                 {
-                    Toast.makeText(MainActivity.this, "Failed to sign in with google auth...", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.main_rel_layout),"Sign in failed",Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
