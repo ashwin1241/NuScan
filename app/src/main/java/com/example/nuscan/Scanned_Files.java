@@ -128,7 +128,6 @@ public class Scanned_Files extends AppCompatActivity {
                 //Collections.swap(mElist,fromposition,i);
                 recyclerView.getAdapter().notifyItemMoved(fromposition,toposition);
 //                saveData(mElist);
-                queries.deleteAllSpecificSubItems(card_id);
                 queries.insertAllSubItems(mElist);
                 return false;
             }
