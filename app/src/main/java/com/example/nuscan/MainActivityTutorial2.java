@@ -78,7 +78,7 @@ public class MainActivityTutorial2 extends AppCompatActivity {
             case Calendar.SUNDAY: day = "Sun";
                 break;
         }
-        mElist.add(0, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,0,null,null));
+        mElist.add(0, new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,0,null,null, 0));
     }
 
     @Override

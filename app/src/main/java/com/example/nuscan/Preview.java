@@ -66,15 +66,15 @@ public class Preview extends AppCompatActivity {
         instantiateDataBase();
 
         card_id = getIntent().getLongExtra("card_id",0);
+        position = getIntent().getIntExtra("position",0);
+        page_title = getIntent().getStringExtra("page title");
+
         loadData();
 
-        page_title = getIntent().getStringExtra("page title");
-        imguri = getIntent().getParcelableExtra("previmg");
-        name = getIntent().getStringExtra("name");
-        title = getIntent().getStringExtra("title");
-        pdfname12 = getIntent().getStringExtra("pdfname");
-        position = getIntent().getIntExtra("position",0);
-        card_id = getIntent().getLongExtra("card_id",0);
+        imguri = Uri.parse(mElist.get(position).getImage());
+        name = mElist.get(position).getImgname();
+        title = "NuScan scanned file "+mElist.get(position).getTitle();
+        pdfname12 = mElist.get(position).getPdfname();
         previmg = findViewById(R.id.previmg);
         File mainfile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + name);
         if(mainfile.exists())

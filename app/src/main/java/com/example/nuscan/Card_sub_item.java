@@ -1,6 +1,7 @@
 package com.example.nuscan;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -16,14 +17,17 @@ private String imgname;
 private String pdfname;
 @PrimaryKey(autoGenerate = false)
 private long id;
+@ColumnInfo(name = "inx")
+private int index;
 
-    public Card_sub_item(String title, String image, long parent_id, String imgname, @NonNull String pdfname, long id) {
+    public Card_sub_item(String title, String image, long parent_id, String imgname, @NonNull String pdfname, long id, int index) {
         this.title = title;
         this.image = image;
         this.parent_id = parent_id;
         this.imgname = imgname;
         this.pdfname = pdfname;
         this.id = id;
+        this.index = index;
     }
 
     public String getTitle() {
@@ -72,5 +76,13 @@ private long id;
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

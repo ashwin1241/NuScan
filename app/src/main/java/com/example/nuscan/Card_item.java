@@ -1,5 +1,6 @@
 package com.example.nuscan;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -15,14 +16,17 @@ public class Card_item implements Serializable {
     private long id;
     private String image;
     private String pdfname;
+    @ColumnInfo(name = "inx")
+    private int index;
 
-    public Card_item(String title, String date, boolean isSelected, long id, String image, String pdfname) {
+    public Card_item(String title, String date, boolean isSelected, long id, String image, String pdfname, int index) {
         this.title = title;
         this.date = date;
         this.isSelected = isSelected;
         this.id = id;
         this.image = image;
         this.pdfname = pdfname;
+        this.index = index;
     }
 
     public String getTitle() {
@@ -71,5 +75,13 @@ public class Card_item implements Serializable {
 
     public void setPdfname(String pdfname) {
         this.pdfname = pdfname;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

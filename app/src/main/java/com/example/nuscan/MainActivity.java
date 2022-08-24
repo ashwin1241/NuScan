@@ -27,7 +27,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -478,6 +477,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -504,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         String pname = "NuScan_Batch_" + System.currentTimeMillis() + ".pdf";
-        Card_item item = new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,System.currentTimeMillis(),null,pname);
+        Card_item item = new Card_item("NuScan_"+day+"_"+ new SimpleDateFormat("HH:mm").format(new Date()),date,false,System.currentTimeMillis(),null,pname, mElist.size());
         mElist.add(position, item);
         mAdapter.notifyItemInserted(position);
 //        saveData(mElist);
@@ -554,6 +556,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -567,6 +572,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -580,6 +588,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -593,6 +604,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -939,6 +953,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         card_delete.setVisibility(View.INVISIBLE);
         card_multiple_share.setVisibility(View.INVISIBLE);
 //        saveData(mElist);
+        int i;
+        for(i=0;i<mElist.size();i++)
+            mElist.get(i).setIndex(i);
         queries.insertAllItems(mElist);
     }
 
@@ -980,6 +997,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             card_delete.setVisibility(View.INVISIBLE);
             card_multiple_share.setVisibility(View.INVISIBLE);
 //            saveData(mElist);
+            int i;
+            for(i=0;i<mElist.size();i++)
+                mElist.get(i).setIndex(i);
             queries.insertAllItems(mElist);
         }
         catch (Exception e)
@@ -1012,6 +1032,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 card_delete.setVisibility(View.INVISIBLE);
                 card_multiple_share.setVisibility(View.INVISIBLE);
 //                saveData(mElist);
+                int i;
+                for(i=0;i<mElist.size();i++)
+                    mElist.get(i).setIndex(i);
                 queries.insertAllItems(mElist);
             }
         })
