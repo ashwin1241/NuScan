@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             card_add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    insert_item(0);
+                    insert_item(mElist.size());
                 }
             });
 
@@ -477,7 +477,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -554,7 +553,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -568,7 +566,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -582,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -596,7 +592,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         mAdapter.notifyDataSetChanged();
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -943,7 +938,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         card_delete.setVisibility(View.INVISIBLE);
         card_multiple_share.setVisibility(View.INVISIBLE);
 //        saveData(mElist);
-        queries.deleteAllItems();
         queries.insertAllItems(mElist);
     }
 
@@ -985,7 +979,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             card_delete.setVisibility(View.INVISIBLE);
             card_multiple_share.setVisibility(View.INVISIBLE);
 //            saveData(mElist);
-            queries.deleteAllItems();
             queries.insertAllItems(mElist);
         }
         catch (Exception e)
@@ -1018,7 +1011,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 card_delete.setVisibility(View.INVISIBLE);
                 card_multiple_share.setVisibility(View.INVISIBLE);
 //                saveData(mElist);
-                queries.deleteAllItems();
                 queries.insertAllItems(mElist);
             }
         })
