@@ -30,11 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="17dp"
-        android:fontFamily="@font/amaranth"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:text="Coding language: Java\nIDE Used: Android Studio\nStorage used: Device Internal Storage\nNation of Origin: India\nDeveloped by: Ashwin Avinash Wadatkar\nApp size: ~19mb\nAdfree: Atleast I developped it without any Ad pages\nPrivacy: Trust me, no data will be automatically leaked by the app, considering that this app is offline till you want to share files"/>
+        android:fontFamily="@font/amaranth"
+        android:text="Coding language: Java\nIDE Used: Android Studio\nStorage used: Device Internal Storage\nNation of Origin: India\nDeveloped by: Ashwin Avinash Wadatkar\nApp size: ~23mb\nAdfree: Atleast I developped it without any Ad pages\nPrivacy: Trust me, no data will be automatically leaked by the app, considering that this app is offline till you want to share files"
+        android:textSize="17dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/app_tutorial"
