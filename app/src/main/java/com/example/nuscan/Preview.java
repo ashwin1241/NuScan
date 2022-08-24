@@ -63,6 +63,8 @@ public class Preview extends AppCompatActivity {
         setContentView(R.layout.activity_preview);
         getSupportActionBar().setTitle("Preview");
 
+        instantiateDataBase();
+
         card_id = getIntent().getLongExtra("card_id",0);
         loadData();
 

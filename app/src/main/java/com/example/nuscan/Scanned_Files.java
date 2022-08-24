@@ -75,6 +75,8 @@ public class Scanned_Files extends AppCompatActivity {
         }
         card_id = getIntent().getLongExtra("card_id",0);
 
+        instantiateDataBase();
+
         loadData();
         loadDataMain();
         buildrecyclerview();
@@ -141,7 +143,6 @@ public class Scanned_Files extends AppCompatActivity {
 
     private void loadDataMain()
     {
-        instantiateDataBase();
         mElist1 = (ArrayList<Card_item>) queries.getAllItems();
         if(mElist1==null)
             mElist1 = new ArrayList<>();

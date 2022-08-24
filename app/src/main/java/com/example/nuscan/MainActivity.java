@@ -161,6 +161,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("NuScan");
 
+        instantiateDataBase();
+
         loadLoginData();
         loadData();
         buildNavDrawer();
@@ -402,7 +404,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadData()
     {
-        instantiateDataBase();
         mElist = (ArrayList<Card_item>) queries.getAllItems();
         if(mElist==null)
             mElist = new ArrayList<>();
