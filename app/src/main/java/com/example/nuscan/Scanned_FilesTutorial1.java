@@ -79,7 +79,7 @@ public class Scanned_FilesTutorial1 extends AppCompatActivity {
             }
         });
 
-        mElist.add(new Card_sub_item("NuScan_"+day+"_"+date+"_0",null, 0, null,null,System.currentTimeMillis(), 0));
+        mElist.add(new Card_sub_item("NuScan_"+day+"_"+date+"_0",null, null, 0, null,null,System.currentTimeMillis(), 0));
 
     }
 

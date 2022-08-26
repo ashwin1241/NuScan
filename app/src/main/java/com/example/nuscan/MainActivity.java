@@ -322,6 +322,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
 
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.main_rel_layout),"Refresh page to get bugless UI experience",Snackbar.LENGTH_SHORT);
+        snackbar.show();
+
     }
 
     private boolean permission()

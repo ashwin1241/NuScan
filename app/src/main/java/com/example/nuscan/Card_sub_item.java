@@ -12,6 +12,7 @@ public class Card_sub_item implements Serializable {
 
 private String title;
 private String image;
+private String editedImage;
 private long parent_id;
 private String imgname;
 private String pdfname;
@@ -20,9 +21,10 @@ private long id;
 @ColumnInfo(name = "inx")
 private int index;
 
-    public Card_sub_item(String title, String image, long parent_id, String imgname, @NonNull String pdfname, long id, int index) {
+    public Card_sub_item(String title, String image, String editedImage, long parent_id, String imgname, @NonNull String pdfname, long id, int index) {
         this.title = title;
         this.image = image;
+        this.editedImage = editedImage;
         this.parent_id = parent_id;
         this.imgname = imgname;
         this.pdfname = pdfname;
@@ -84,5 +86,13 @@ private int index;
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getEditedImage() {
+        return editedImage;
+    }
+
+    public void setEditedImage(String editedImage) {
+        this.editedImage = editedImage;
     }
 }

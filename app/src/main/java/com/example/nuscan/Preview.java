@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -38,6 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Preview extends AppCompatActivity {
 
@@ -248,6 +251,18 @@ public class Preview extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        try
+                        {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                getContentResolver().delete(Uri.parse(mElist.get(position).getImage()),null);
+                                if(mElist.get(position).getEditedImage()!=null)
+                                    getContentResolver().delete(Uri.parse(mElist.get(position).getEditedImage()),null);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Toast.makeText(Preview.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                         queries.deleteSubItem(mElist.get(position));
                         mElist.remove(position);
                         //saveData(mElist);
@@ -270,7 +285,6 @@ public class Preview extends AppCompatActivity {
 
     private void loadData()
     {
-        instantiateDataBase();
         mElist = (ArrayList<Card_sub_item>) queries.getAllSubItems(card_id);
         if(mElist==null)
             mElist = new ArrayList<>();
@@ -307,6 +321,21 @@ public class Preview extends AppCompatActivity {
         {
             imguri = data.getData();
             previmg.setImageURI(imguri);
+            if(mElist.get(position).getEditedImage()!=null)
+            {
+                try
+                {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        getContentResolver().delete(Uri.parse(mElist.get(position).getEditedImage()),null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(Preview.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            mElist.get(position).setEditedImage(imguri.toString().trim());
+            queries.updateSubItem(mElist.get(position));
         }
     }
 
