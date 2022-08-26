@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog progressDialog,progressDialog12;
     private DataBase dataBase;
     private Queries queries;
+    private static final int PDF_SHARE_REQUEST_CODE = 123456;
+    private Uri pdfShareUri;
 
     @Override
     protected void onResume() {
@@ -405,6 +407,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+        if(requestCode==PDF_SHARE_REQUEST_CODE)
+        {
+            try
+            {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    getContentResolver().delete(pdfShareUri,null);
+                }
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void loadData()
@@ -430,6 +445,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         loginSharedPreferences = getSharedPreferences("login_data",MODE_PRIVATE);
         SharedPreferences.Editor editor = loginSharedPreferences.edit();
+        editor.clear().apply();
         Gson gson1,gson2;
         gson1 = new Gson();
         gson2 = new Gson();
@@ -520,6 +536,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void remove_item(int position)
     {
+        progressDialog12.setMessage("Deleting items");
+        progressDialog12.setCanceledOnTouchOutside(false);
+        progressDialog12.show();
+        ArrayList<Card_sub_item> sub_items = (ArrayList<Card_sub_item>) queries.getAllSubItems(mElist.get(position).getId());
+        for(int i=0;i<sub_items.size();i++)
+        {
+            progressDialog12.setProgress((i)/sub_items.size()*100);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            },500);
+            try
+            {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    getContentResolver().delete(Uri.parse(sub_items.get(i).getImage()),null);
+                    if(sub_items.get(i).getEditedImage()!=null)
+                        getContentResolver().delete(Uri.parse(sub_items.get(i).getEditedImage()),null);
+                }
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        progressDialog12.dismiss();
         queries.deleteItem(mElist.get(position));
         queries.deleteAllSpecificSubItems(mElist.get(position).getId());
         mElist.remove(position);
@@ -832,7 +875,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan batch scanned file " + list1.get(position).getTitle());
             intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+list1.get(position).getTitle());
-            startActivity(Intent.createChooser(intent, "Share with.."));
+            pdfShareUri = pdfuri;
+            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
         }
         catch (Exception e)
         {
@@ -937,7 +981,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan Bulk scanned file " + date);
             intent.putExtra(Intent.EXTRA_TEXT,"NuScan Bulk scanned file "+ date);
-            startActivity(Intent.createChooser(intent, "Share with.."));
+            pdfShareUri = pdfuri;
+            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
         }
         catch (Exception e)
         {

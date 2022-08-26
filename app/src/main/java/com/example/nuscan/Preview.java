@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,7 +39,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class Preview extends AppCompatActivity {
 
@@ -59,6 +57,8 @@ public class Preview extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private DataBase dataBase;
     private Queries queries;
+    private static final int PDF_SHARE_REQUEST_CODE = 3550;
+    private Uri pdfShareUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +226,8 @@ public class Preview extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_STREAM, pdfuri);
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             intent.putExtra(Intent.EXTRA_TEXT, title);
-            startActivity(Intent.createChooser(intent, "Share with.."));
+            pdfShareUri = pdfuri;
+            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
         }
         catch (Exception e)
         {
@@ -336,6 +337,19 @@ public class Preview extends AppCompatActivity {
             }
             mElist.get(position).setEditedImage(imguri.toString().trim());
             queries.updateSubItem(mElist.get(position));
+        }
+        if(requestCode==PDF_SHARE_REQUEST_CODE)
+        {
+            try
+            {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    getContentResolver().delete(pdfShareUri,null);
+                }
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(Preview.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
