@@ -57,7 +57,7 @@ public class Preview extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private DataBase dataBase;
     private Queries queries;
-    private static final int PDF_SHARE_REQUEST_CODE = 3550;
+    private static final int PDF_SHARE_REQUEST_CODE_PREVIEW = 3550;
     private Uri pdfShareUri;
 
     @Override
@@ -227,7 +227,7 @@ public class Preview extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             intent.putExtra(Intent.EXTRA_TEXT, title);
             pdfShareUri = pdfuri;
-            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
+            startActivityForResult(Intent.createChooser(intent, "Share with.."), PDF_SHARE_REQUEST_CODE_PREVIEW);
         }
         catch (Exception e)
         {
@@ -338,7 +338,7 @@ public class Preview extends AppCompatActivity {
             mElist.get(position).setEditedImage(imguri.toString().trim());
             queries.updateSubItem(mElist.get(position));
         }
-        if(requestCode==PDF_SHARE_REQUEST_CODE)
+        if(requestCode== PDF_SHARE_REQUEST_CODE_PREVIEW)
         {
             try
             {

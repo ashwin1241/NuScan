@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "793044851352-1jfmt8iadej2sf52rt9pvdl8jba922ti.apps.googleusercontent.com",
+          "client_id": "793044851352-1pkue299h0j1ntouoe30hfipkm1371ae.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.nuscan",
-            "certificate_hash": "97c159e961d5bba4a26711b905722e98badc9ed1"
+            "certificate_hash": "7ab5e182b0e86a71f7cb7db24697f080f3489661"
           }
         },
         {

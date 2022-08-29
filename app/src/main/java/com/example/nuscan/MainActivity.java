@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog progressDialog,progressDialog12;
     private DataBase dataBase;
     private Queries queries;
-    private static final int PDF_SHARE_REQUEST_CODE = 123456;
+    private static final int PDF_SHARE_REQUEST_CODE_MAIN = 123456;
     private Uri pdfShareUri;
 
     @Override
@@ -407,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-        if(requestCode==PDF_SHARE_REQUEST_CODE)
+        if(requestCode== PDF_SHARE_REQUEST_CODE_MAIN)
         {
             try
             {
@@ -876,7 +875,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan batch scanned file " + list1.get(position).getTitle());
             intent.putExtra(Intent.EXTRA_TEXT,"NuScan scanned file "+list1.get(position).getTitle());
             pdfShareUri = pdfuri;
-            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
+            startActivityForResult(Intent.createChooser(intent, "Share with.."), PDF_SHARE_REQUEST_CODE_MAIN);
         }
         catch (Exception e)
         {
@@ -982,7 +981,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.putExtra(Intent.EXTRA_SUBJECT, "NuScan Bulk scanned file " + date);
             intent.putExtra(Intent.EXTRA_TEXT,"NuScan Bulk scanned file "+ date);
             pdfShareUri = pdfuri;
-            startActivityForResult(Intent.createChooser(intent, "Share with.."),PDF_SHARE_REQUEST_CODE);
+            startActivityForResult(Intent.createChooser(intent, "Share with.."), PDF_SHARE_REQUEST_CODE_MAIN);
         }
         catch (Exception e)
         {
