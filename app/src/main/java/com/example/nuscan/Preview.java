@@ -259,6 +259,30 @@ public class Preview extends AppCompatActivity {
                                 if(mElist.get(position).getEditedImage()!=null)
                                     getContentResolver().delete(Uri.parse(mElist.get(position).getEditedImage()),null);
                             }
+                            else
+                            {
+                                File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES+"/"+mElist.get(position).getImgname()).getAbsoluteFile();
+                                if(file.exists())
+                                {
+                                    file.delete();
+                                    if (file.exists()) {
+                                        File file1 = new File(new File(mElist.get(position).getImage()).getAbsolutePath());
+                                        file1.delete();
+                                        if (file1.exists()) {
+                                            File file2 = new File(mElist.get(position).getImage()).getCanonicalFile();
+                                            file2.delete();
+                                            if (file2.exists()) {
+                                                File file3 = new File(mElist.get(position).getImage()).getAbsoluteFile();
+                                                file3.delete();
+                                                if (file3.exists())
+                                                    Toast.makeText(Preview.this, "Gaand mara, ye file nahi delete hoe wali", Toast.LENGTH_SHORT).show();
+                                                else
+                                                    Toast.makeText(Preview.this, "Mubarak ho! Kaam ho gaya!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         catch (Exception e)
                         {
