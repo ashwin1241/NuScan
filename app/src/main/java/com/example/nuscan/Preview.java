@@ -1,14 +1,10 @@
 package com.example.nuscan;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -22,6 +18,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
@@ -261,24 +263,40 @@ public class Preview extends AppCompatActivity {
                             }
                             else
                             {
-                                File file = getExternalFilesDir(Environment.DIRECTORY_PICTURES+"/"+mElist.get(position).getImgname()).getAbsoluteFile();
+                                String fileName = new File(mElist.get(position).getImage()).getName();
+                                String filePath = Environment.DIRECTORY_PICTURES+"/"+fileName;
+                                File file = getExternalFilesDir(filePath).getAbsoluteFile();
                                 if(file.exists())
                                 {
                                     file.delete();
                                     if (file.exists()) {
-                                        File file1 = new File(new File(mElist.get(position).getImage()).getAbsolutePath());
+                                        File file1 = getExternalFilesDir(filePath).getAbsoluteFile();
                                         file1.delete();
                                         if (file1.exists()) {
-                                            File file2 = new File(mElist.get(position).getImage()).getCanonicalFile();
+                                            File file2 = getExternalFilesDir(filePath).getCanonicalFile();
                                             file2.delete();
-                                            if (file2.exists()) {
-                                                File file3 = new File(mElist.get(position).getImage()).getAbsoluteFile();
-                                                file3.delete();
-                                                if (file3.exists())
-                                                    Toast.makeText(Preview.this, "Gaand mara, ye file nahi delete hoe wali", Toast.LENGTH_SHORT).show();
-                                                else
-                                                    Toast.makeText(Preview.this, "Mubarak ho! Kaam ho gaya!", Toast.LENGTH_SHORT).show();
-                                            }
+                                            if(file2.exists())
+                                                Toast.makeText(Preview.this, "Delete failed", Toast.LENGTH_SHORT).show();
+                                            else
+                                                Toast.makeText(Preview.this, "Delete successful", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                                fileName  = getFileNameByUri(Preview.this,Uri.parse(mElist.get(position).getEditedImage()));
+                                file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/NuScan/"+fileName).getAbsoluteFile();
+                                if(file.exists())
+                                {
+                                    file.delete();
+                                    if (file.exists()) {
+                                        File file1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/NuScan/"+fileName).getAbsoluteFile();
+                                        file1.delete();
+                                        if (file1.exists()) {
+                                            File file2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/NuScan/"+fileName).getCanonicalFile();
+                                            file2.delete();
+                                            if(file2.exists())
+                                                Toast.makeText(Preview.this, "Delete failed", Toast.LENGTH_SHORT).show();
+                                            else
+                                                Toast.makeText(Preview.this, "Delete successful", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -306,6 +324,31 @@ public class Preview extends AppCompatActivity {
                     }
                 });
         builder.create().show();
+    }
+
+    public static String getFileNameByUri(Context context, Uri uri)
+    {
+        String fileName="unknown";//default fileName
+        Uri filePathUri = uri;
+        if (uri.getScheme().toString().compareTo("content")==0)
+        {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            if (cursor.moveToFirst())
+            {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);//Instead of "MediaStore.Images.Media.DATA" can be used "_data"
+                filePathUri = Uri.parse(cursor.getString(column_index));
+                fileName = filePathUri.getLastPathSegment().toString();
+            }
+        }
+        else if (uri.getScheme().compareTo("file")==0)
+        {
+            fileName = filePathUri.getLastPathSegment().toString();
+        }
+        else
+        {
+            fileName = fileName+"_"+filePathUri.getLastPathSegment();
+        }
+        return fileName;
     }
 
     private void loadData()

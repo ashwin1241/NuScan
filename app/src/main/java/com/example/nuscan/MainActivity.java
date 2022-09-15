@@ -546,12 +546,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for(int i=0;i<sub_items.size();i++)
         {
             progressDialog12.setProgress((i)/sub_items.size()*100);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            },500);
             try
             {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
